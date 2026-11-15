@@ -36,7 +36,7 @@
         header {
             background: var(--surface);
             border-bottom: 1px solid var(--border);
-            padding: 22px 40px;
+            padding: 18px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -45,17 +45,17 @@
 
         .logo-area h1 {
             color: var(--primary);
-            font-size: 1.9rem;
-            letter-spacing: 3px;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
             font-weight: 400;
             margin-bottom: 2px;
         }
 
         .logo-area .sub-brand {
             font-family: 'Georgia', serif;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--muted);
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             font-style: italic;
             font-weight: 400;
         }
@@ -63,34 +63,41 @@
         .header-badge {
             background: var(--primary-light);
             color: var(--primary);
-            padding: 6px 16px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
             border: 1px solid rgba(158, 107, 122, 0.15);
+            white-space: nowrap;
         }
 
         .app-container {
             max-width: 1500px;
-            margin: 30px auto;
-            padding: 0 25px;
+            margin: 20px auto;
+            padding: 0 15px;
             display: grid;
             grid-template-columns: 1.2fr 1fr;
-            gap: 30px;
+            gap: 20px;
             flex: 1;
             width: 100%;
         }
 
+        /* התאמה מלאה למסכי מובייל וטאבלטים קטנים */
         @media (max-width: 1024px) {
             .app-container {
                 grid-template-columns: 1fr;
+                padding: 0 10px;
+                margin: 10px auto;
+            }
+            header {
+                padding: 15px;
             }
         }
 
         .card {
             background: var(--surface);
             border-radius: var(--radius);
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 10px 35px rgba(158, 107, 122, 0.05);
             border: 1px solid var(--border);
             display: flex;
@@ -98,29 +105,31 @@
         }
 
         .card-title {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             color: var(--primary);
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 12px;
+            padding-bottom: 10px;
         }
 
         .search-row {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
         }
 
         .search-row input, .search-row select {
             flex: 1;
-            padding: 12px 16px;
+            min-width: 140px;
+            padding: 10px 14px;
             border: 1px solid var(--border);
             border-radius: 12px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             background: #FCFAFA;
             color: var(--dark);
             outline: none;
@@ -136,65 +145,65 @@
         .exercise-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-height: 600px;
+            gap: 10px;
+            max-height: 550px;
             overflow-y: auto;
-            padding-left: 6px;
+            padding-left: 4px;
         }
 
         .exercise-card {
             background: #FCF9FA;
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 16px;
+            padding: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             transition: all 0.2s ease;
         }
 
         .exercise-card:hover {
             border-color: var(--primary);
             background: var(--primary-light);
-            transform: translateY(-2px);
         }
 
         .ex-info h4 {
             color: var(--primary);
-            font-size: 1.05rem;
-            margin-bottom: 4px;
+            font-size: 1rem;
+            margin-bottom: 3px;
             font-weight: 600;
         }
 
         .ex-info p {
-            font-size: 0.83rem;
+            font-size: 0.8rem;
             color: var(--muted);
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
 
         .ex-desc {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: #7A6B70;
             font-style: italic;
         }
 
         .ex-springs {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: #C2825D;
             font-weight: 700;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
         .ex-equipment {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: var(--primary);
             font-weight: 600;
             margin-top: 2px;
         }
 
         .ex-link {
-            font-size: 0.75rem;
-            margin-top: 5px;
+            font-size: 0.72rem;
+            margin-top: 4px;
         }
         .ex-link a {
             color: var(--accent);
@@ -207,10 +216,10 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 10px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: background 0.2s;
             white-space: nowrap;
@@ -221,10 +230,10 @@
             background: var(--accent);
             color: white;
             border: none;
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 10px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: background 0.2s;
             white-space: nowrap;
@@ -233,23 +242,23 @@
 
         .tabs-nav {
             display: flex;
-            gap: 6px;
-            margin-bottom: 20px;
+            gap: 4px;
+            margin-bottom: 15px;
             background: var(--primary-light);
-            padding: 6px;
+            padding: 5px;
             border-radius: 14px;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 10px 4px;
+            padding: 8px 2px;
             border: none;
             background: transparent;
             font-weight: 600;
             color: var(--muted);
             border-radius: 10px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             transition: all 0.2s;
             text-align: center;
         }
@@ -265,63 +274,66 @@
 
         .lesson-title-input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--border);
             border-radius: 12px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             text-align: center;
             background: #FCFAFA;
             color: var(--primary);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .rest-builder-row {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
         .rest-builder-row select {
-            padding: 10px;
+            padding: 8px;
             border: 1px solid var(--border);
             border-radius: 10px;
             background: #FCFAFA;
+            font-size: 0.85rem;
         }
         .rest-add-btn {
             background: #A6979D;
             color: white;
             border: none;
-            padding: 10px 16px;
+            padding: 8px 12px;
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             flex: 1;
+            font-size: 0.85rem;
             transition: background 0.2s;
         }
         .rest-add-btn:hover { background: #8E7D84; }
 
         .lesson-items-list {
             list-style: none;
-            min-height: 220px;
-            max-height: 330px;
+            min-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
             border: 2px dashed var(--border);
             border-radius: 14px;
-            padding: 12px;
+            padding: 10px;
             background: #FCFAFA;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .lesson-items-list li {
             background: white;
             border: 1px solid var(--border);
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            gap: 8px;
         }
 
         .lesson-items-list li.rest-item {
@@ -334,16 +346,16 @@
             background: var(--danger);
             color: white;
             border: none;
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 8px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             cursor: pointer;
         }
         .delete-btn:hover { background: #BE5656; }
 
         .summary-box {
             border-top: 1px solid var(--border);
-            padding-top: 15px;
+            padding-top: 12px;
             margin-top: auto;
         }
 
@@ -351,8 +363,8 @@
             display: flex;
             justify-content: space-between;
             font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 15px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
             color: var(--primary);
         }
 
@@ -364,7 +376,7 @@
             padding: 12px;
             border-radius: 12px;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
             letter-spacing: 0.5px;
             transition: background 0.2s;
@@ -374,8 +386,8 @@
         .saved-lessons-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-height: 450px;
+            gap: 10px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
@@ -383,58 +395,59 @@
             background: #FCF9FA;
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 14px 16px;
+            padding: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .saved-info h5 {
             color: var(--primary);
-            font-size: 1rem;
-            margin-bottom: 3px;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
         }
 
         .saved-info p {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--muted);
         }
 
         .saved-actions {
             display: flex;
-            gap: 6px;
+            gap: 5px;
             flex-wrap: wrap;
-            justify-content: flex-end;
         }
 
         .calendar-nav-title {
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             color: var(--primary);
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             text-align: center;
         }
 
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            gap: 4px;
         }
 
         .cal-head {
             text-align: center;
             font-weight: 600;
             color: var(--primary);
-            font-size: 0.8rem;
-            padding-bottom: 6px;
+            font-size: 0.75rem;
+            padding-bottom: 4px;
         }
 
         .cal-cell {
             background: #FCFAFA;
             border: 1px solid var(--border);
-            border-radius: 10px;
-            min-height: 85px;
-            padding: 6px;
+            border-radius: 8px;
+            min-height: 70px;
+            padding: 4px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -449,33 +462,33 @@
 
         .cal-cell.highlight-target {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
             background: #FFFEF8;
         }
 
         .cal-cell .day-num {
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             color: var(--dark);
         }
 
         .cal-cell .assigned-badge {
             background: var(--primary);
             color: white;
-            font-size: 0.65rem;
-            padding: 3px 4px;
-            border-radius: 6px;
+            font-size: 0.58rem;
+            padding: 2px 3px;
+            border-radius: 4px;
             word-break: break-word;
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
         .cal-cell .remove-cal {
             background: var(--danger);
             color: white;
             border: none;
-            font-size: 0.6rem;
-            padding: 2px;
-            border-radius: 4px;
+            font-size: 0.55rem;
+            padding: 1px;
+            border-radius: 3px;
             cursor: pointer;
             margin-top: 2px;
         }
@@ -535,7 +548,7 @@
                 </div>
 
                 <ul class="lesson-items-list" id="lessonItems">
-                    <p style="color: var(--muted); text-align: center; margin-top: 60px;" id="emptyMsg">השיעור שלך עדיין ריק.<br>הוסיפי תרגילים ממאגר השמאל.</p>
+                    <p style="color: var(--muted); text-align: center; margin-top: 50px; font-size: 0.9rem;" id="emptyMsg">השיעור שלך עדיין ריק.<br>הוסיפי תרגילים ממאגר השמאל.</p>
                 </ul>
 
                 <div class="summary-box">
@@ -549,17 +562,17 @@
 
             <!-- טאב שיעורים שמורים (ארכיון) -->
             <div class="tab-content" id="tabSaved">
-                <h3 style="font-size: 1.05rem; color: var(--primary); margin-bottom: 12px;">ארכיון השיעורים שלך</h3>
-                <p style="font-size: 0.83rem; color: var(--muted); margin-bottom: 15px;">כאן תוכלו לפתוח שיעורים לעריכה, למחוק אותם, או לבחור לשבץ אותם ישירות ללוח השנה.</p>
+                <h3 style="font-size: 1rem; color: var(--primary); margin-bottom: 10px;">ארכיון השיעורים שלך</h3>
+                <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">כאן תוכלו לפתוח שיעורים לעריכה, למחוק אותם, או לשבץ ללוח השנה.</p>
                 <div class="saved-lessons-container" id="savedLessonsList">
-                    <p style="color: var(--muted); text-align: center; margin-top: 40px;">עדיין אין שיעורים שמורים במערכת.</p>
+                    <p style="color: var(--muted); text-align: center; margin-top: 30px;">עדיין אין שיעורים שמורים במערכת.</p>
                 </div>
             </div>
 
             <!-- טאב לוח שנה -->
             <div class="tab-content" id="tabCalendar">
                 <div class="calendar-nav-title" id="calendarTitle">נובמבר 2026 📅</div>
-                <p style="font-size: 0.83rem; color: var(--muted); margin-bottom: 12px; text-align: center;" id="calendarInstruction">לחצי על תאריך בלוח כדי לשבץ אליו את השיעור שבנית.</p>
+                <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; text-align: center;" id="calendarInstruction">לחצי על תאריך בלוח כדי לשבץ אליו את השיעור שבנית.</p>
                 <div class="calendar-grid" id="calendarGrid">
                     <!-- יטענו דינמית -->
                 </div>
@@ -568,23 +581,17 @@
     </div>
 
     <script>
-        // מאגר תרגילים מקיף המכיל את כל 53 התרגילים המלאים, קפיצים מותאמים ואביזרים
         const allExercises = [
-            // --- תרגילי חימום ---
             { id: 1, name: "Cat & Cow (חתול ופרה)", category: "תרגילי חימום", target: "ניידות עמוד שדרה", duration: 3, description: "עמידת שש, קימור וקעירות גב חליפין לשחרור חוליות.", muscles: "עמוד שדרה, בטן ושכמות.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
             { id: 2, name: "Standing Rolldown (גלגול עמוד שדרה בעמידה)", category: "תרגילי חימום", target: "הארכת גב וחימום", duration: 3, description: "כפיפת הראש וגלילת הגוף מטה חוליה אחר חוליה וחזרה.", muscles: "זוקפי גב וירך אחורית.", springs: "ללא קפיצים", equipment: "ללא אביזרים (עמידה)" },
             { id: 3, name: "Footwork Series - Warmup", category: "תרגילי חימום", target: "חימום רגליים ומפרקים", duration: 5, description: "דחיפת עגלת הרפורמר בקצב קליל להזרמת דם למפרקים.", muscles: "רגליים וקרסוליים.", springs: "🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" },
             { id: 4, name: "Pelvic Tilts (הטות אגן)", category: "תרגילי חימום", target: "ניידות אגן ובטן עמוקה", duration: 3, description: "שכיבה על הגב והנעת האגן לאחור והדבקת הגב למזרן.", muscles: "בטן תחתונה ומייצבי אגן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-
-            // --- תרגילי מתיחות ---
             { id: 5, name: "Classical Mermaid (בת הים)", category: "תרגילי מתיחות", target: "מתיחת צידי גוף", duration: 4, description: "ישיבה וכפיפה הצידה להארכת שרירי הצד והמותניים.", muscles: "שרירי צלעות ומותניים.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר" },
             { id: 6, name: "Spine Stretch Forward", category: "תרגילי מתיחות", target: "שחרור גב עליון", duration: 3, description: "ישיבה עם רגליים ישרות וכיפוף קדימה להארכת הגב.", muscles: "ירך אחורית וגב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
             { id: 7, name: "Feet in Straps - Hamstring Stretch", category: "תרגילי מתיחות", target: "מתיחת ירך אחורית", duration: 4, description: "משיכת רגל ישרה מעלה באמצעות רצועות הרפורמר.", muscles: "ירך אחורית ותאומים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות רגליים" },
             { id: 8, name: "Chest Expansion Stretch", category: "תרגילי מתיחות", target: "פתיחת חזה וכתפיים", duration: 3, description: "משיכת רצועות לאחור וזקיפת החזה לנשימה עמוקה.", muscles: "חזה וקדמת כתפיים.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + רצועות ידיים" },
-
-            // --- פילאטיס מזרן (Mat Exercises) ---
-            { id: 9, name: "The Hundred (המאן)", category: "פילאטיס מזרן", target: "בטן ונשימה", duration: 5, description: "שכיבה על הגב, הרמת ראש וכתפיים, שאיפה ונשיפה תוך קצב הנעת ידיים באוויר.", muscles: "בטן עמוקה, שרירי ליבה ויציבה.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)", videoUrl: "https://www.youtube.com/watch?v=akFkx5vzXgs" },
-            { id: 10, name: "Roll Up (רול אפ)", category: "פילאטיס מזרן", target: "עמוד שדרה ובטן", duration: 4, description: "גלילת עמוד שדרה חוליה אחר חוליה מישיבה לשכיבה ובחזרה.", muscles: "שרירי בטן רוחביים וישרים, זוקפי גב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)", videoUrl: "https://www.youtube.com/watch?v=Nqroi2BVD6E" },
+            { id: 9, name: "The Hundred (המאן)", category: "פילאטיס מזרן", target: "בטן ונשימה", duration: 5, description: "שכיבה על הגב, הרמת ראש וכתפיים, שאיפה ונשיפה תוך קצב הנעת ידיים באוויר.", muscles: "בטן עמוקה, שרירי ליבה ויציבה.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 10, name: "Roll Up (רול אפ)", category: "פילאטיס מזרן", target: "עמוד שדרה ובטן", duration: 4, description: "גלילת עמוד שדרה חוליה אחר חוליה מישיבה לשכיבה ובחזרה.", muscles: "שרירי בטן רוחביים וישרים, זוקפי גב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
             { id: 11, name: "Roll Over (רול אובר)", category: "פילאטיס מזרן", target: "גב עליון ושליטה", duration: 4, description: "הרמת רגליים והעברתן מעבר לראש בשליטה מלאה של שרירי הבטן.", muscles: "בטן תחתונה, גב עליון ושכמות.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
             { id: 12, name: "One Leg Circle (מעגל רגל)", category: "פילאטיס מזרן", target: "יציבות אגן וירכיים", duration: 4, description: "ציור מעגלים מדויקים באוויר עם רגל ישרה תוך שמירה על אגן מקובע.", muscles: "מפרק הירך ושרירי ליבה.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
             { id: 13, name: "Rolling Like a Ball (גיהוץ כדור)", category: "פילאטיס מזרן", target: "עיסוי גב ושיווי משקל", duration: 3, description: "התנדנדות לאחור וחזרה לישיבה תוך שמירה על גב עגול ואסוף.", muscles: "שרירי בטן עמוקים ומייצבים.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
@@ -601,11 +608,9 @@
             { id: 24, name: "Side Kick Series (סדרת בעיטות צד)", category: "פילאטיס מזרן", target: "ירכיים וישבן צדדי", duration: 6, description: "הרמות והנפת רגליים לשانب בשכיבה על הצד לייצוב האגן.", muscles: "מרחיקי ירך (Gluteus Medius).", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
             { id: 25, name: "Teaser (טיזר)", category: "פילאטיס מזרן", target: "שיווי משקל ובטן עליונה", duration: 5, description: "הרמת הגו והרגליים יחד ליצירת צורת V מאוזנת ויציבה.", muscles: "בטן עמוקה ושיווי משקל.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
             { id: 26, name: "Bridge & Shoulder Bridge (גשר הכתפיים)", category: "פילאטיס מזרן", target: "ישבן, ירך אחורית ועמוד שדרה", duration: 4, description: "הרמת האגן מעלה חוליה אחר חוליה ויציבות על הכתפיים.", muscles: "ישבן וירך אחורית.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-
-            // --- פילאטיס מכשיר / רפורמר (Reformer Exercises) ---
             { id: 27, name: "Footwork Series (עבודת רגליים: Toes, Arches, Heels)", category: "פילאטיס מכשיר", target: "חימום רגליים ואגן", duration: 6, description: "דחיפת העגלה באמצעות בהונות, עקבים או קשתות כף הרגל.", muscles: "ארבע ראשי, שוקיים וירך אחורית.", springs: "🟢 + 🔴 (ירוק + אדום)", equipment: "מכשיר רפורמר" },
             { id: 28, name: "Tendon Stretch (מתיחת גידים)", category: "פילאטיס מכשיר", target: "שיווי משקל וקרסוליים", duration: 4, description: "עמידה על העגלה ודחיפתה תוך שליטה בשיווי המשקל.", muscles: "שוקיים וקרסוליים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 29, name: "The Hundred on Reformer (המאן על רפורמר)", category: "פילאטיס מכשיר", target: "בטן ונשימה עם התנגדות", duration: 5, description: "תרגיל המאן הקלאסי תוך החזקת רצועות המכשיר בידיים.", muscles: "שרירי ליבה ובטן.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות ידיים", videoUrl: "https://www.youtube.com/watch?v=vx4DdBWY6kQ" },
+            { id: 29, name: "The Hundred on Reformer (המאן על רפורמר)", category: "פילאטיס מכשיר", target: "בטן ונשימה עם התנגדות", duration: 5, description: "תרגיל המאן הקלאסי תוך החזקת רצועות המכשיר בידיים.", muscles: "שרירי ליבה ובטן.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות ידיים" },
             { id: 30, name: "Overhead", category: "פילאטיס מכשיר", target: "שליטה בגב עליון ואגן", duration: 4, description: "העברת הרגליים מעבר לראש ואל מעל הרפורמר בשליטה.", muscles: "בטן תחתונה וגב עליון.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות" },
             { id: 31, name: "Coordination", category: "פילאטיס מכשיר", target: "תיאום גפיים ונשימה", duration: 4, description: "תיאום בין פתיחת ידיים ורגליים לבין הנעת העגלה.", muscles: "בטן, ידיים ורגליים.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות" },
             { id: 32, name: "Rowing Series", category: "פילאטיס מכשיר", target: "חגורת כתפיים וגב", duration: 6, description: "סדרת חתירה קלאסית עם רצועות מישיבה על קצה הרפורמר.", muscles: "שכמות וגב עליון.", springs: "🟡 (צהוב) או 🔵 (כחול)", equipment: "מכשיר רפורמר + רצועות ידיים" },
@@ -617,7 +622,7 @@
             { id: 38, name: "Long Stretch Series", category: "פילאטיס מכשיר", target: "כוח ליבה ויציבות", duration: 6, description: "סדרת תרגילי פלאנק ושליטה בעגלה ברמות שונות.", muscles: "ליבה מלאה וכתפיים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
             { id: 39, name: "Elephant & Elephant 1 Leg", category: "פילאטיס מכשיר", target: "רגליים ויציבה", duration: 6, description: "עמידה עם עקבים על העגלה ופתיחת וסגירת העגלה מהאגן והבטן.", muscles: "בטן תחתונה וירך אחורית.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
             { id: 40, name: "Long Back Stretch", category: "פילאטיס מכשיר", target: "כתפיים ושליטה בקרש", duration: 4, description: "שליטה בעגלה ממנח פלאנק הפוך.", muscles: "חגורת כתפיים ויציבה.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 41, name: "Stomach Massage Series", category: "פילאטיס מכשיר", target: "בטן ורגליים", duration: 7, description: "ישיבה על קצה העגלה ודחיפת הבר ברגליים בווריאציות שונות.", muscles: "ירך קדמית ובטן עמוקה.", springs: "🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר", videoUrl: "https://www.youtube.com/watch?v=BxpXZObK-Ao" },
+            { id: 41, name: "Stomach Massage Series", category: "פילאטיס מכשיר", target: "בטן ורגליים", duration: 7, description: "ישיבה על קצה העגלה ודחיפת הבר ברגליים בווריאציות שונות.", muscles: "ירך קדמית ובטן עמוקה.", springs: "🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" },
             { id: 42, name: "Short Box Series", category: "פילאטיס מכשיר", target: "בטן, זוקפי גב ומתיחות", duration: 8, description: "כפיפות לאחור ולצדדים ומתיחות רגליים על גבי קופסה קצרה.", muscles: "בטן, זוקפי גב ואלכסונים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + קופסה קצרה (Short Box)" },
             { id: 43, name: "Short Spine Massage", category: "פילאטיס מכשיר", target: "ניידות עמוד שדרה", duration: 5, description: "שכיבה עם רגליים ברצועות וגלילת האגן מעלה להרמת עמוד השדרה.", muscles: "בטן תחתונה וגב.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות רגליים" },
             { id: 44, name: "Semi Circle", category: "פילאטיס מכשיר", target: "ניידות אגן וגב", duration: 5, description: "תנועה קלאסית מעגלית עם האגן על העגלה.", muscles: "אגן ועמוד שדרה.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
@@ -708,7 +713,7 @@
             lessonEl.innerHTML = '';
             
             if (myLesson.length === 0) {
-                lessonEl.innerHTML = `<p style="color: var(--muted); text-align: center; margin-top: 60px;" id="emptyMsg">השיעור שלך עדיין ריק.<br>הוסיפי תרגילים ממאגר השמאל.</p>`;
+                lessonEl.innerHTML = `<p style="color: var(--muted); text-align: center; margin-top: 50px; font-size: 0.9rem;" id="emptyMsg">השיעור שלך עדיין ריק.<br>הוסיפי תרגילים ממאגר השמאל.</p>`;
                 countEl.innerText = '0';
                 timeEl.innerText = '0';
                 return;
@@ -765,7 +770,7 @@
             document.getElementById('savedCount').innerText = savedLessons.length;
             
             if (savedLessons.length === 0) {
-                container.innerHTML = `<p style="color: var(--muted); text-align: center; margin-top: 40px;">עדיין אין שיעורים שמורים במערכת.</p>`;
+                container.innerHTML = `<p style="color: var(--muted); text-align: center; margin-top: 30px;">עדיין אין שיעורים שמורים במערכת.</p>`;
                 return;
             }
 
@@ -821,7 +826,7 @@
             } else if (tabName === 'saved') {
                 document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
                 document.getElementById('tabSaved').classList.add('active');
-                activeAssignLessonTitle = null;
+                activeAssignLessonTitle, activeAssignLessonTitle = null;
             } else {
                 document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
                 document.getElementById('tabCalendar').classList.add('active');
@@ -844,7 +849,7 @@
             for (let i = 1; i <= 30; i++) {
                 let cellClass = "cal-cell";
                 if(activeAssignLessonTitle) {
-                    cellClass += " highlight-target";
+                    cellClass += " highlight-target	";
                 }
 
                 let cellContent = `<span class="day-num">${i}</span>`;
