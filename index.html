@@ -82,7 +82,6 @@
             width: 100%;
         }
 
-        /* התאמה מלאה למסכי מובייל וטאבלטים קטנים */
         @media (max-width: 1024px) {
             .app-container {
                 grid-template-columns: 1fr;
@@ -145,8 +144,8 @@
         .exercise-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            max-height: 550px;
+            gap: 12px;
+            max-height: 580px;
             overflow-y: auto;
             padding-left: 4px;
         }
@@ -157,15 +156,21 @@
             border-radius: 14px;
             padding: 14px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            gap: 8px;
             transition: all 0.2s ease;
         }
 
         .exercise-card:hover {
             border-color: var(--primary);
             background: var(--primary-light);
+        }
+
+        .ex-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
         }
 
         .ex-info h4 {
@@ -182,29 +187,44 @@
         }
 
         .ex-desc {
+            font-size: 0.78rem;
+            color: #5A4E52;
+            line-height: 1.4;
+            background: #FFF;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(234, 219, 223, 0.6);
+        }
+
+        .ex-tips {
+            font-size: 0.76rem;
+            color: #8A5260;
+            background: var(--primary-light);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .ex-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 0.75rem;
-            color: #7A6B70;
-            font-style: italic;
+            margin-top: 2px;
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
         .ex-springs {
-            font-size: 0.75rem;
             color: #C2825D;
             font-weight: 700;
-            margin-top: 3px;
         }
 
         .ex-equipment {
-            font-size: 0.75rem;
             color: var(--primary);
             font-weight: 600;
-            margin-top: 2px;
         }
 
-        .ex-link {
-            font-size: 0.72rem;
-            margin-top: 4px;
-        }
         .ex-link a {
             color: var(--accent);
             text-decoration: none;
@@ -216,7 +236,7 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 10px;
             font-weight: 600;
             font-size: 0.8rem;
@@ -505,7 +525,7 @@
     </header>
 
     <div class="app-container">
-        <!-- צד שמאל: מאגר התרגילים המלא (כל 53 התרגילים) -->
+        <!-- צד שמאל: מאגר התרגילים המלא עם הסברים מפורטים ודגשים -->
         <div class="card">
             <div class="card-title">
                 <span>מאגר תרגילים מקיף (53 תרגילים)</span>
@@ -581,60 +601,139 @@
     </div>
 
     <script>
+        // מאגר 53 התרגילים המלא הכולל הסברים מפורטים ודגשי ביצוע מדויקים לכל תרגיל
         const allExercises = [
-            { id: 1, name: "Cat & Cow (חתול ופרה)", category: "תרגילי חימום", target: "ניידות עמוד שדרה", duration: 3, description: "עמידת שש, קימור וקעירות גב חליפין לשחרור חוליות.", muscles: "עמוד שדרה, בטן ושכמות.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 2, name: "Standing Rolldown (גלגול עמוד שדרה בעמידה)", category: "תרגילי חימום", target: "הארכת גב וחימום", duration: 3, description: "כפיפת הראש וגלילת הגוף מטה חוליה אחר חוליה וחזרה.", muscles: "זוקפי גב וירך אחורית.", springs: "ללא קפיצים", equipment: "ללא אביזרים (עמידה)" },
-            { id: 3, name: "Footwork Series - Warmup", category: "תרגילי חימום", target: "חימום רגליים ומפרקים", duration: 5, description: "דחיפת עגלת הרפורמר בקצב קליל להזרמת דם למפרקים.", muscles: "רגליים וקרסוליים.", springs: "🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" },
-            { id: 4, name: "Pelvic Tilts (הטות אגן)", category: "תרגילי חימום", target: "ניידות אגן ובטן עמוקה", duration: 3, description: "שכיבה על הגב והנעת האגן לאחור והדבקת הגב למזרן.", muscles: "בטן תחתונה ומייצבי אגן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 5, name: "Classical Mermaid (בת הים)", category: "תרגילי מתיחות", target: "מתיחת צידי גוף", duration: 4, description: "ישיבה וכפיפה הצידה להארכת שרירי הצד והמותניים.", muscles: "שרירי צלעות ומותניים.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר" },
-            { id: 6, name: "Spine Stretch Forward", category: "תרגילי מתיחות", target: "שחרור גב עליון", duration: 3, description: "ישיבה עם רגליים ישרות וכיפוף קדימה להארכת הגב.", muscles: "ירך אחורית וגב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 7, name: "Feet in Straps - Hamstring Stretch", category: "תרגילי מתיחות", target: "מתיחת ירך אחורית", duration: 4, description: "משיכת רגל ישרה מעלה באמצעות רצועות הרפורמר.", muscles: "ירך אחורית ותאומים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות רגליים" },
-            { id: 8, name: "Chest Expansion Stretch", category: "תרגילי מתיחות", target: "פתיחת חזה וכתפיים", duration: 3, description: "משיכת רצועות לאחור וזקיפת החזה לנשימה עמוקה.", muscles: "חזה וקדמת כתפיים.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + רצועות ידיים" },
-            { id: 9, name: "The Hundred (המאן)", category: "פילאטיס מזרן", target: "בטן ונשימה", duration: 5, description: "שכיבה על הגב, הרמת ראש וכתפיים, שאיפה ונשיפה תוך קצב הנעת ידיים באוויר.", muscles: "בטן עמוקה, שרירי ליבה ויציבה.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 10, name: "Roll Up (רול אפ)", category: "פילאטיס מזרן", target: "עמוד שדרה ובטן", duration: 4, description: "גלילת עמוד שדרה חוליה אחר חוליה מישיבה לשכיבה ובחזרה.", muscles: "שרירי בטן רוחביים וישרים, זוקפי גב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 11, name: "Roll Over (רול אובר)", category: "פילאטיס מזרן", target: "גב עליון ושליטה", duration: 4, description: "הרמת רגליים והעברתן מעבר לראש בשליטה מלאה של שרירי הבטן.", muscles: "בטן תחתונה, גב עליון ושכמות.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 12, name: "One Leg Circle (מעגל רגל)", category: "פילאטיס מזרן", target: "יציבות אגן וירכיים", duration: 4, description: "ציור מעגלים מדויקים באוויר עם רגל ישרה תוך שמירה על אגן מקובע.", muscles: "מפרק הירך ושרירי ליבה.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 13, name: "Rolling Like a Ball (גיהוץ כדור)", category: "פילאטיס מזרן", target: "עיסוי גב ושיווי משקל", duration: 3, description: "התנדנדות לאחור וחזרה לישיבה תוך שמירה על גב עגול ואסוף.", muscles: "שרירי בטן עמוקים ומייצבים.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 14, name: "Single Leg Stretch (מתיחת רגל אחת)", category: "פילאטיס מזרן", target: "ליבה ובטן", duration: 4, description: "משיחת ברך אחת אל החזה והחלפת רגליים בקצב יציב ומבוקר.", muscles: "בטן תחתונה ושרירי ליבה.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 15, name: "Double Leg Stretch (מתיחת שתי רגליים)", category: "פילאטיס מזרן", target: "חיזוק בטן עמוקה", duration: 4, description: "הרחקת ידיים ורגליים במקביל מהמרכז וחזרתן בתנועה מעגלית.", muscles: "ליבה ובטן רוחבית.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 16, name: "Spine Stretch Forward (מתיחת עמוד שדרה)", category: "פילאטיס מזרן", target: "שחרור גב ומתיחה", duration: 3, description: "כפיפה קדימה מעל האגן חוליה אחר חוליה להארכת הגב.", muscles: "גב עליון וזוקפי גב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 17, name: "Open Leg Rocker (רוקר רגליים פתוחות)", category: "פילאטיס מזרן", target: "שיווי משקל ושליטה", duration: 4, description: "תנועה דינמית באיזון על עצמות הישיבה עם רגליים פתוחות וישרות.", muscles: "בטן אלכסונית ושיווי משקל.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 18, name: "Corkscrew (חולץ פקקים)", category: "פילאטיס מזרן", target: "בטן אלכסונית ויציבות", duration: 5, description: "ציור מעגלים רחבים באוויר עם שתי רגליים ישרות תוך שליטה באגן.", muscles: "אלכסוני הבטן ומייצבי אגן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 19, name: "Saw (המסור)", category: "פילאטיס מזרן", target: "רוטציה של עמוד שדרה", duration: 4, description: "סיבוב הגו לצדדים והגעה עם יד אל כף הרגל הנגדית.", muscles: "בטן אלכסונית ורוטטורים של הגב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 20, name: "Swan Dive (שחיית ברבור)", category: "פילאטיס מזרן", target: "חיזוק זוקפי גב", duration: 4, description: "הרמת החזה והגב העליון בשכיבה על הבטן תוך שמירה על אגן יציב.", muscles: "זוקפי גב, ישבן ושכמות.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 21, name: "Single Leg Kick (בעיטת רגל בודדת)", category: "פילאטיס מזרן", target: "ירך אחורית וישבן", duration: 4, description: "כפיפת ברך כפולה להדגשת עבודה על שרירי הרגליים האחוריים.", muscles: "ירך אחורית וישבן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 22, name: "Double Leg Kick (בעיטת שתי רגליים)", category: "פילאטיס מזרן", target: "גב עליון וישבן", duration: 4, description: "שילוב הרמת פלג גוף עליון ושתי הרגליים יחד בשכיבה על הבטן.", muscles: "גב עליון וישבן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 23, name: "Neck Pull (משיכת צוואר)", category: "פילאטיס מזרן", target: "שליטה בעמוד שדרה", duration: 4, description: "עליה לאיטיות מישיבה לשכיבה עם ידיים מאחורי הראש והארכת הגב.", muscles: "בטן ישרה וזוקפי גב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 24, name: "Side Kick Series (סדרת בעיטות צד)", category: "פילאטיס מזרן", target: "ירכיים וישבן צדדי", duration: 6, description: "הרמות והנפת רגליים לשانب בשכיבה על הצד לייצוב האגן.", muscles: "מרחיקי ירך (Gluteus Medius).", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 25, name: "Teaser (טיזר)", category: "פילאטיס מזרן", target: "שיווי משקל ובטן עליונה", duration: 5, description: "הרמת הגו והרגליים יחד ליצירת צורת V מאוזנת ויציבה.", muscles: "בטן עמוקה ושיווי משקל.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 26, name: "Bridge & Shoulder Bridge (גשר הכתפיים)", category: "פילאטיס מזרן", target: "ישבן, ירך אחורית ועמוד שדרה", duration: 4, description: "הרמת האגן מעלה חוליה אחר חוליה ויציבות על הכתפיים.", muscles: "ישבן וירך אחורית.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 27, name: "Footwork Series (עבודת רגליים: Toes, Arches, Heels)", category: "פילאטיס מכשיר", target: "חימום רגליים ואגן", duration: 6, description: "דחיפת העגלה באמצעות בהונות, עקבים או קשתות כף הרגל.", muscles: "ארבע ראשי, שוקיים וירך אחורית.", springs: "🟢 + 🔴 (ירוק + אדום)", equipment: "מכשיר רפורמר" },
-            { id: 28, name: "Tendon Stretch (מתיחת גידים)", category: "פילאטיס מכשיר", target: "שיווי משקל וקרסוליים", duration: 4, description: "עמידה על העגלה ודחיפתה תוך שליטה בשיווי המשקל.", muscles: "שוקיים וקרסוליים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 29, name: "The Hundred on Reformer (המאן על רפורמר)", category: "פילאטיס מכשיר", target: "בטן ונשימה עם התנגדות", duration: 5, description: "תרגיל המאן הקלאסי תוך החזקת רצועות המכשיר בידיים.", muscles: "שרירי ליבה ובטן.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות ידיים" },
-            { id: 30, name: "Overhead", category: "פילאטיס מכשיר", target: "שליטה בגב עליון ואגן", duration: 4, description: "העברת הרגליים מעבר לראש ואל מעל הרפורמר בשליטה.", muscles: "בטן תחתונה וגב עליון.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות" },
-            { id: 31, name: "Coordination", category: "פילאטיס מכשיר", target: "תיאום גפיים ונשימה", duration: 4, description: "תיאום בין פתיחת ידיים ורגליים לבין הנעת העגלה.", muscles: "בטן, ידיים ורגליים.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות" },
-            { id: 32, name: "Rowing Series", category: "פילאטיס מכשיר", target: "חגורת כתפיים וגב", duration: 6, description: "סדרת חתירה קלאסית עם רצועות מישיבה על קצה הרפורמר.", muscles: "שכמות וגב עליון.", springs: "🟡 (צהוב) או 🔵 (כחול)", equipment: "מכשיר רפורמר + רצועות ידיים" },
-            { id: 33, name: "Long Box - Swan", category: "פילאטיס מכשיר", target: "זוקפי גב עליון", duration: 5, description: "הרמת החזה בשכיבה על הבטן על קופסה ארוכה.", muscles: "זוקפי גב עליון ושכמות.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + קופסה ארוכה (Long Box)" },
-            { id: 34, name: "Long Box - Pull Straps & T-Straps", category: "פילאטיס מכשיר", target: "שכמות ויציבה", duration: 5, description: "משיכת רצועות לאחור בשכיבה על הבטן בקופסה ארוכה.", muscles: "כתפיים אחוריות ושכמות.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + קופסה ארוכה ורצועות" },
-            { id: 35, name: "Long Box - Backstroke", category: "פילאטיס מכשיר", target: "בטן ותיאום תנועה", duration: 5, description: "שכיבה על הגב בקופסה ארוכה עם רצועות בידיים וברגליים.", muscles: "בטן ושיווי משקל.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + קופסה ארוכה ורצועות" },
-            { id: 36, name: "Long Box - Teaser", category: "פילאטיס מכשיר", target: "בטן ושיווי משקל", duration: 5, description: "עליה לטיזר בקופסה ארוכה עם רצועות.", muscles: "בטן עמוקה ושיווי משקל.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + קופסה ארוכה ורצועות" },
-            { id: 37, name: "Long Box - Breaststroke & Horseback", category: "פילאטיס מכשיר", target: "חיזוק גב עמוק וירכיים", duration: 5, description: "תרגילי המשך קלאסיים על קופסה ארוכה.", muscles: "גב וירכיים פנימיות.", springs: "🟡 או 🔵 (צהוב / כחול)", equipment: "מכשיר רפורמר + קופסה ארוכה" },
-            { id: 38, name: "Long Stretch Series", category: "פילאטיס מכשיר", target: "כוח ליבה ויציבות", duration: 6, description: "סדרת תרגילי פלאנק ושליטה בעגלה ברמות שונות.", muscles: "ליבה מלאה וכתפיים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 39, name: "Elephant & Elephant 1 Leg", category: "פילאטיס מכשיר", target: "רגליים ויציבה", duration: 6, description: "עמידה עם עקבים על העגלה ופתיחת וסגירת העגלה מהאגן והבטן.", muscles: "בטן תחתונה וירך אחורית.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 40, name: "Long Back Stretch", category: "פילאטיס מכשיר", target: "כתפיים ושליטה בקרש", duration: 4, description: "שליטה בעגלה ממנח פלאנק הפוך.", muscles: "חגורת כתפיים ויציבה.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 41, name: "Stomach Massage Series", category: "פילאטיס מכשיר", target: "בטן ורגליים", duration: 7, description: "ישיבה על קצה העגלה ודחיפת הבר ברגליים בווריאציות שונות.", muscles: "ירך קדמית ובטן עמוקה.", springs: "🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" },
+            // --- תרגילי חימום ---
+            { 
+                id: 1, name: "Cat & Cow (חתול ופרה)", category: "תרגילי חימום", target: "ניידות עמוד שדרה", duration: 3, 
+                description: "עמידת שש מדויקת. בשאיפה מקערים את הגב ומסתכלים קדימה, ובנשיפה מעגלים את עמוד השדרה כלפי מעלה תוך הכנסת בטן עמוקה.", 
+                tips: "דגש: תנועה חלקה מחוליה לחוליה; הימנעו מדחיפת כתפיים אל האוזניים.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
+            },
+            { 
+                id: 2, name: "Standing Rolldown (גלגול עמוד שדרה בעמידה)", category: "תרגילי חימום", target: "הארכת גב וחימום", duration: 3, 
+                description: "עמידה זקופה, כפיפה רכה של הסנטר והורדת הראש חוליה אחר חוליה מטה עד להقعת הידיים לכיוון הרצפה, וחזרה איטית.", 
+                tips: "דגש: שמרו על ברכיים רכות מעט (לא נעולות) ועבדו נגד כוח הכובד.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (עמידה)" 
+            },
+            { 
+                id: 3, name: "Footwork Series - Warmup", category: "תרגילי חימום", target: "חימום רגליים ומפרקים", duration: 5, 
+                description: "שכיבה על גבי העגלה ברפורמר, הנחת כפות הרגליים על הבר ודחיפה מבוקרת של העגלה תוך שמירה על יציבות האגן.", 
+                tips: "דגש: יישור מלא של הברכיים בלי לנעול פרקים, ושליטה מלאה בחזרה.", 
+                springs: "🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" 
+            },
+            { 
+                id: 4, name: "Pelvic Tilts (הטות אגן)", category: "תרגילי חימום", target: "ניידות אגן ובטן עמוקה", duration: 3, 
+                description: "שכיבה על הגב עם ברכיים כפופות. הטיית האגן לאחור כך שהגב התחתון נצמד לחלוטין למזרן, ולאחר מכן חזרה לקשת טבעית קטנה.", 
+                tips: "דגש: התנועה יוצאת מהבטן התחתונה ולא מכיווץ הישבן.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
+            },
+
+            // --- תרגילי מתיחות ---
+            { 
+                id: 5, name: "Classical Mermaid (בת הים)", category: "תרגילי מתיחות", target: "מתיחת צידי גוף", duration: 4, 
+                description: "ישיבת זاز (רגליים מקופלות לצד), הרמת יד אחת מעלה וכפיפת הגו הצידה להארכת מירבית של שרירי הצלעות והמותן.", 
+                tips: "דגש: שמרו על שתי עצמות הישיבה דבוקות למזרן/עגלה בזמן הכפיפה.", 
+                springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר" 
+            },
+            { 
+                id: 6, name: "Spine Stretch Forward", category: "תרגילי מתיחות", target: "שחרור גב עליון", duration: 3, 
+                description: "ישיבה עם רגליים פתוחות ברוחב האגן וישרות לפנים. שאיפה להארכה ונשיפה לכפוף את הגו קדימה מעל האגן.", 
+                tips: "דגש: דמיינו שאתם מתכופפים מעל כדור ענק בלי לקרוס באזור המותניים.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
+            },
+            { 
+                id: 7, name: "Feet in Straps - Hamstring Stretch", category: "תרגילי מתיחות", target: "מתיחת ירך אחורית", duration: 4, 
+                description: "שכיבה על הרפורמר עם רצועות המחוזקות לכפות הרגליים, והורדה והעלאה של הרגליים תוך מתיחת הירך האחורית.", 
+                tips: "דגש: שמרו על אגן רחב ויציב על המזרן לאורך כל התנועה.", 
+                springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות רגליים" 
+            },
+            { 
+                id: 8, name: "Chest Expansion Stretch", category: "תרגילי מתיחות", target: "פתיחת חזה וכתפיים", duration: 3, 
+                description: "ישיבה או עמידה על הברכיים, אחיזת רצועות הרפורמר ומשיכתן לאחור תוך פתיחת בית החזה לרווחה.", 
+                tips: "דגש: כיווץ קל של השכמות לאחור ושמירה על צוואר ארוך.", 
+                springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + רצועות ידיים" 
+            },
+
+            // --- פילאטיס מזרן (Mat Exercises) ---
+            { 
+                id: 9, name: "The Hundred (המאן)", category: "פילאטיס מזרן", target: "בטן ונשימה", duration: 5, 
+                description: "שכיבה על הגב, הרמת ראש ושכמות באוויר, רגליים בטבלא טופ (או ישרות באלכסון), והנעת ידיים קצובה למעלה ולמטה.", 
+                tips: "דגש: 5 פעימות לשאיפה ו-5 פעימות לנשיפה; שמירה הדוקה על בטן אסوفة.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
+            },
+            { 
+                id: 10, name: "Roll Up (רול אפ)", category: "פילאטיס מזרן", target: "עמוד שדרה ובטן", duration: 4, 
+                description: "שכיבה מלאה על הגב, ידיים מעל הראש. בשאיפה מרימים ידיים, ובנשיפה גוללים את עמוד השדרה חוליה אחר חוליה עד לישיבה ונגיעת בהונות.", 
+                tips: "דגש: תנועה רציפה וללא תנופה מהירה.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
+            },
+            { 
+                id: 11, name: "Roll Over (רול אובר)", category: "פילאטיס מזרן", target: "גב עליון ושליטה", duration: 4, 
+                description: "שכיבה על הגב, הרמת רגליים למעלה והעברתן מעבר לראש בשליטה מלאה תוך כדי שימוש בבטן העמוקה.", 
+                tips: "דגש: אין ליצור לחץ על חוליות הצוואר; המשקל נשען על השכמות.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
+            },
+            { 
+                id: 12, name: "One Leg Circle (מעגל רגל)", category: "פילאטיס מזרן", target: "יציבות אגן וירכיים", duration: 4, 
+                description: "שכיבה על הגב, רגל אחת ישרה מעלה והשנייה ישרה על המזרן. ציור מעגלים מדויקים באוויר עם הרגל המורמת.", 
+                tips: "דגש: האגן חייב להישאר מקובע לחלוטין בלי להתנדנד מצד לצד.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
+            },
+            { 
+                id: 13, name: "Rolling Like a Ball (גיהוץ כדור)", category: "פילאטיס מזרן", target: "עיסוי גב ושיווי משקל", duration: 3, 
+                description: "ישיבה קומפקטית ואסופה, אחיזת השוקיים, גלגול לאחור עד לשכמות וחזרה מדויקת לישיבה ללא נפילת הרגליים.", 
+                tips: "דגש: שמרו על גב עגול ואחיד כמו כדור לאורך כל הגלגול.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
+            },
+            { 
+                id: 14, name: "Single Leg Stretch (מתיחת רגל אחת)", category: "פילאטיס מזרן", target: "ליבה ובטן", duration: 4, 
+                description: "שכיבה עם ראש וכתפיים מורמים, יד אחת על הברך השנייה ורגל נגדית פשוטה באוויר. החלפה קצבית של הרגליים.", 
+                tips: "דגש: שמרו על מרכז גוף יציב והרחקה של הכתפיים מהאוזניים.", 
+                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
+            },
+            { 
+                id: 15, name: "Double Leg Stretch (מתיחת שתי רגליים)", category: "פילאטיס מזרן", target: "חיזוק בטן עמוקה", duration: 4, description: "איסוף ברכיים אל החזה, הרחקת ידיים מעל הראש ושתי רגליים באלכסון במקביל, וחזרה למרכז.", muscles: "ליבה ובטן רוחבית.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 16, name: "Spine Stretch Forward (מתיחת עמוד שדרה)", category: "פילאטיס מזרן", target: "שחרור גב ומתיחה", duration: 3, description: "ישיבה זקופה ופיסוק קל, הושטת ידיים קדימה וקמירת הגב מעבר לאגן להארכה מרבית.", muscles: "גב עליון וזוקפי גב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 17, name: "Open Leg Rocker (רוקר רגליים פתוחות)", category: "פילאטיס מזרן", target: "שיווי משקל ושליטה", duration: 4, description: "איזון על עצמות הישיבה כשהרגליים פתוחות וישרות באחיזת קרסוליים, וגלגול לאחור וחזרה.", muscles: "בטן אלכסונית ושיווי משקל.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 18, name: "Corkscrew (חולץ פקקים)", category: "פילאטיס מזרן", target: "בטן אלכסונית ויציבות", duration: 5, description: "שכיבה על הגב וציור מעגלים רחבים עם שתי הרגליים יחד בשליטה מוחלטת של שרירי הבטן.", muscles: "אלכסוני הבטן ומייצבי אגן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 19, name: "Saw (המסור)", category: "פילאטיס מזרן", target: "רוטציה של עמוד שדרה", duration: 4, description: "ישיבה רחבה, סיבוב הגו ימינה ושליחת היד השמאלית לעבר כף הרגל הנגדית בתנועת ניסור.", muscles: "בטן אלכסונית ורוטטורים של הגב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 20, name: "Swan Dive (שחיית ברבור)", category: "פילאטיס מזרן", target: "חיזוק זוקפי גב", duration: 4, description: "שכיבה על הבטן, הרמת החזה והידיים מעלה תוך הפעלת זוקפי הגב והישבן.", muscles: "זוקפי גב, ישבן ושכמות.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 21, name: "Single Leg Kick (בעיטת רגל בודדת)", category: "פילאטיס מזרן", target: "ירך אחורית וישבן", duration: 4, description: "הישענות על האמות בשכיבה על הבטן, וביצוע שתי בעיטות מהירות עם העקב אל הישבן בכל רגל לסירוגין.", muscles: "ירך אחורית וישבן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 22, name: "Double Leg Kick (בעיטת שתי רגליים)", category: "פילאטיס מזרן", target: "גב עליון וישבן", duration: 4, description: "ראש מוטה לצד אחד, שילוב ידיים בגב התחתון, שלוש בעיטות רגליים יחד ואז פתיחת גוף מלאה.", muscles: "גב עליון וישבן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 23, name: "Neck Pull (משיכת צוואר)", category: "פילאטיס מזרן", target: "שליטה בעמוד שדרה", duration: 4, description: "שכיבה על הגב, ידיים מאחורי הראש, גלגול איטי קדימה ושמירה על גב ארוך.", muscles: "בטן ישרה וזוקפי גב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 24, name: "Side Kick Series (סדרת בעיטות צד)", category: "פילאטיס מזרן", target: "ירכיים וישבן צדדי", duration: 6, description: "שכיבה על הצד, ייצוב הגוף והנפת הרגל העליונה קדימה ואחורה.", muscles: "מרחיקי ירך (Gluteus Medius).", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 25, name: "Teaser (טיזר)", category: "פילאטיס מזרן", target: "שיווי משקל ובטן עליונה", duration: 5, description: "עליה בו זמנית של פלג הגוף העליון והרגליים ליצירת צורת V מושלמת.", muscles: "בטן עמוקה ושיווי משקל.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+            { id: 26, name: "Bridge & Shoulder Bridge (גשר הכתפיים)", category: "פילאטיס מזרן", target: "ישבן, ירך אחורית ועמוד שדרה", duration: 4, description: "הרמת האגן חוליה אחר חוליה עד לקו ישר מהברכיים ועד הכתפיים.", muscles: "ישבן וירך אחורית.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
+
+            // --- פילאטיס מכשיר / רפורמר (Reformer Exercises) ---
+            { id: 27, name: "Footwork Series (עבודת רגליים)", category: "פילאטיס מכשיר", target: "חימום רגליים ואגן", duration: 6, description: "דחיפת עגלת הרפורמר עם בהונות, עקבים או קשתות כף הרגל לחיזוק שרירי הרגליים.", muscles: "ארבע ראשי, שוקיים וירך אחורית.", springs: "🟢 + 🔴 (ירוק + אדום)", equipment: "מכשיר רפורמר" },
+            { id: 28, name: "Tendon Stretch (מתיחת גידים)", category: "פילאטיס מכשיר", target: "שיווי משקל וקרסוליים", duration: 4, description: "עמידה על קצה העגלה ודחיפתה קדימה בשליטה מלאה של הקרסוליים והשוקיים.", muscles: "שוקיים וקרסוליים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
+            { id: 29, name: "The Hundred on Reformer (המאן על רפורמר)", category: "פילאטיס מכשיר", target: "בטן ונשימה עם התנגדות", duration: 5, description: "תרגיל המאן הקלאסי בשילוב החזקת רצועות המכשיר בידיים ליצירת התנגדות נוספת.", muscles: "שרירי ליבה ובטן.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות ידיים" },
+            { id: 30, name: "Overhead", category: "פילאטיס מכשיר", target: "שליטה בגב עליון ואגן", duration: 4, description: "שכיבה על הרפורמר, משיכת הרצועות והעברת הרגליים מעבר לראש בשליטה.", muscles: "בטן תחתונה וגב עליון.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות" },
+            { id: 31, name: "Coordination", category: "פילאטיס מכשיר", target: "תיאום גפיים ונשימה", duration: 4, description: "תיאום מדויק בין פתיחת הידיים והרגליים לבין סגירת ופתיחת העגלה.", muscles: "בטן, ידיים ורגליים.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות" },
+            { id: 32, name: "Rowing Series", category: "פילאטיס מכשיר", target: "חגורת כתפיים וגב", duration: 6, description: "סדרת חתירה קלאסית עם רצועות מישיבה זקופה על קצה הרפורמר.", muscles: "שכמות וגב עליון.", springs: "🟡 (צהוב) או 🔵 (כחול)", equipment: "מכשיר רפורמר + רצועות ידיים" },
+            { id: 33, name: "Long Box - Swan", category: "פילאטיס מכשיר", target: "זוקפי גב עליון", duration: 5, description: "שכיבה על הבטן על קופסה ארוכה, הרמת החזה והידיים למעלה ולפנים.", muscles: "זוקפי גב עליון ושכמות.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + קופסה ארוכה (Long Box)" },
+            { id: 34, name: "Long Box - Pull Straps & T-Straps", category: "פילאטיס מכשיר", target: "שכמות ויציבה", duration: 5, description: "משיכת רצועות לאחור בשכיבה על הבטן בקופסה ארוכה לחיזוק הגב העליון.", muscles: "כתפיים אחוריות ושכמות.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + קופסה ארוכה ורצועות" },
+            { id: 35, name: "Long Box - Backstroke", category: "פילאטיס מכשיר", target: "בטן ותיאום תנועה", duration: 5, description: "שכיבה על הגב בקופסה ארוכה עם רצועות בידיים וברגליים וביצוע פתיחות תנועתיות.", muscles: "בטן ושיווי משקל.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + קופסה ארוכה ורצועות" },
+            { id: 36, name: "Long Box - Teaser", category: "פילאטיס מכשיר", target: "בטן ושיווי משקל", duration: 5, description: "עלייה לטיזר מאוזן ויציב מעל גבי הקופסה הארוכה.", muscles: "בטן עמוקה ושיווי משקל.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + קופסה ארוכה ורצועות" },
+            { id: 37, name: "Long Box - Breaststroke & Horseback", category: "פילאטיס מכשיר", target: "חיזוק גב עמוק וירכיים", duration: 5, description: "תרגילי מעבר קלאסיים על קופסה ארוכה לעבודה על יציבה וירכיים פנימיות.", muscles: "גב וירכיים פנימיות.", springs: "🟡 או 🔵 (צהוב / כחול)", equipment: "מכשיר רפורמר + קופסה ארוכה" },
+            { id: 38, name: "Long Stretch Series", category: "פילאטיס מכשיר", target: "כוח ליבה ויציבות", duration: 6, description: "מנח פלאנק חזק על מסגרת ועגלת הרפורמר, והזזת הגוף קדימה ואחורה.", muscles: "ליבה מלאה וכתפיים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
+            { id: 39, name: "Elephant & Elephant 1 Leg", category: "פילאטיס מכשיר", target: "רגליים ויציבה", duration: 6, description: "עמידה עם עקבים על העגלה וגב מעט עגול, פתיחה וסגירת העגלה מהבטן.", muscles: "בטן תחתונה וירך אחורית.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
+            { id: 40, name: "Long Back Stretch", category: "פילאטיס מכשיר", target: "כתפיים ושליטה בקרש", duration: 4, description: "שליטה בעגלה ממנח פלאנק הפוך תוך שמירה על חגורת כתפיים חזקה.", muscles: "חגורת כתפיים ויציבה.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
+            { id: 41, name: "Stomach Massage Series", category: "פילאטיס מכשיר", target: "בטן ורגליים", duration: 7, description: "ישיבה על קצה העגלה ודחיפת הבר ברגליים בווריאציות שונות ודגש על יציבה.", muscles: "ירך קדמית ובטן עמוקה.", springs: "🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" },
             { id: 42, name: "Short Box Series", category: "פילאטיס מכשיר", target: "בטן, זוקפי גב ומתיחות", duration: 8, description: "כפיפות לאחור ולצדדים ומתיחות רגליים על גבי קופסה קצרה.", muscles: "בטן, זוקפי גב ואלכסונים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + קופסה קצרה (Short Box)" },
-            { id: 43, name: "Short Spine Massage", category: "פילאטיס מכשיר", target: "ניידות עמוד שדרה", duration: 5, description: "שכיבה עם רגליים ברצועות וגלילת האגן מעלה להרמת עמוד השדרה.", muscles: "בטן תחתונה וגב.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות רגליים" },
-            { id: 44, name: "Semi Circle", category: "פילאטיס מכשיר", target: "ניידות אגן וגב", duration: 5, description: "תנועה קלאסית מעגלית עם האגן על העגלה.", muscles: "אגן ועמוד שדרה.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
+            { id: 43, name: "Short Spine Massage", category: "פילאטיס מכשיר", target: "ניידות עמוד שדרה", duration: 5, description: "שכיבה עם רגליים ברצועות וגלילת האגן מעלה להרמת עמוד השדרה חוליה אחר חוליה.", muscles: "בטן תחתונה וגב.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות רגליים" },
+            { id: 44, name: "Semi Circle", category: "פילאטיס מכשיר", target: "ניידות אגן וגב", duration: 5, description: "תנועה מעגלית ומודרגת עם האגן על העגלה לשחרור עמוד השדרה.", muscles: "אגן ועמוד שדרה.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
             { id: 45, name: "Chest Expansion & Arm Circles", category: "פילאטיס מכשיר", target: "יציבה ונשימה עמוקה", duration: 5, description: "תרגילי עמידה או ישיבה עם רצועות לחיזוק חגורת הכתפיים.", muscles: "כתפיים וחזה.", springs: "🟡 (צהוב) או 🔵 (כחול)", equipment: "מכשיר רפורמר + רצועות ידיים" },
-            { id: 46, name: "Thigh Stretch", category: "פילאטיס מכשיר", target: "ירך קדמית וליבה", duration: 4, description: "כפיפה לאחור בעמידת ברכיים על העגלה.", muscles: "ירך קדמית ובטן.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 47, name: "Snake & Twist", category: "פילאטיס מכשיר", target: "כוח מתקדם ואלכסונים", duration: 5, description: "תרגיל מתקדם בשליטה צדדית על העגלה.", muscles: "אלכסוני הבטן ומייצבי כתפיים.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר" },
-            { id: 48, name: "Corkscrew & Tic Toc", category: "פילאטיס מכשיר", target: "שליטה באגן ורוטציה", duration: 5, description: "תרגילי רגליים מתקדמים באוויר עם רצועות או החזקה.", muscles: "בטן תחתונה ואלכסונים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות" },
-            { id: 49, name: "Feet in Straps - Leg Circles & Frogs", category: "פילאטיס מכשיר", target: "מפרק הירך ויציבות", duration: 6, description: "ביצוע מעגלים ותנועות צפרדע כשהרגליים מחוזקות ברצועות הרפורמר.", muscles: "מפרקי הירך וירכיים פנימיות.", springs: "🔴 (אדום) או 🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר + רצועות רגליים" },
-            { id: 50, name: "Knee Stretches Series", category: "פילאטיס מכשיר", target: "בטן תחתונה ויציבות", duration: 6, description: "עמידת שש על העגלה והנעת הברכיים קדימה ואחורה בשליטה.", muscles: "בטן עמוקה ומייצבי אגן.", springs: "🔴 (אדום) או 🔵 (כחול)", equipment: "מכשיר רפורמר" },
-            { id: 51, name: "Running on Reformer & Pelvic Lift", category: "פילאטיס מכשיר", target: "קרסוליים וישבן", duration: 5, description: "ריצה קצבית על הרפורמר ותרגיל הרמת אגן.", muscles: "שוקיים וישבן.", springs: "🟢 + 🔴 (ירוק + אדום)", equipment: "מכשיר רפורמר" },
-            { id: 52, name: "Push Up Front & Back", category: "פילאטיס מכשיר", target: "פלג גוף עליון", duration: 5, description: "תרגילי שכיבות סמיכה מתקדמים על הרפורמר.", muscles: "חזה, יד אחורית וכתפיים.", springs: "🔴 (אדום) או 🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" },
-            { id: 53, name: "Side Splits, Front Splits & Russian Splits", category: "פילאטיס מכשיר", target: "גמישות וירכיים", duration: 6, description: "פיסוק ושפגאט מבוקר על העגלה והמסגרת.", muscles: "מפרקי הירך וירכיים פנימיות.", springs: "🔵 (כחול) או 🟡 (צהוב)", equipment: "מכשיר רפורמר" }
+            { id: 46, name: "Thigh Stretch", category: "פילאטיס מכשיר", target: "ירך קדמית וליבה", duration: 4, description: "כפיפה מבוקרת לאחור בעמידת ברכיים על העגלה לשחרור וחיזוק הירך הקדמית.", muscles: "ירך קדמית ובטן.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
+            { id: 47, name: "Snake & Twist", category: "פילאטיס מכשיר", target: "כוח מתקדם ואלכסונים", duration: 5, description: "תרגיל מתקדם בשליטה צדדית ומעבר דינמי על העגלה.", muscles: "אלכסוני הבטן ומייצבי כתפיים.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר" },
+            { id: 48, name: "Corkscrew & Tic Toc", category: "פילאטיס מכשיר", target: "שליטה באגן ורוטציה", duration: 5, description: "תרגילי רגליים מתקדמים באוויר בשילוב רצועות הרפורמר.", muscles: "בטן תחתונה ואלכסונים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות" },
+            { id: 49, name: "Feet in Straps - Leg Circles & Frogs", category: "פילאטיס מכשיר", target: "מפרק הירך ויציבות", duration: 6, description: "ביצוע מעגלי רגליים ותנועות צפרדע כשהרגליים מחוזקות ברצועות הרפורמר.", muscles: "מפרקי הירך וירכיים פנימיות.", springs: "🔴 (אדום) או 🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר + רצועות רגליים" },
+            { id: 50, name: "Knee Stretches Series", category: "פילאטיס מכשיר", target: "בטן תחתונה ויציבות", duration: 6, description: "עמידת שש על העגלה והנעת הברכיים קדימה ואחורה בשליטה מלאה.", muscles: "בטן עמוקה ומייצבי אגן.", springs: "🔴 (אדום) או 🔵 (כחול)", equipment: "מכשיר רפורמר" },
+            { id: 51, name: "Running on Reformer & Pelvic Lift", category: "פילאטיס מכשיר", target: "קרסוליים וישבן", duration: 5, description: "ריצה קצבית על הרפורמר לסירוגין והרמות אגן לשחרור.", muscles: "שוקיים וישבן.", springs: "🟢 + 🔴 (ירוק + אדום)", equipment: "מכשיר רפורמר" },
+            { id: 52, name: "Push Up Front & Back", category: "פילאטיס מכשיר", target: "פלג גוף עליון", duration: 5, description: "שכיבות סמיכה מתקדמות מעל כתפיות הרפורמר.", muscles: "חזה, יד אחורית וכתפיים.", springs: "🔴 (אדום) או 🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" },
+            { id: 53, name: "Side Splits, Front Splits & Russian Splits", category: "פילאטיס מכשיר", target: "גמישות וירכיים", duration: 6, description: "פיסוק ושפגאט מבוקר על העגלה והמסגרת לעבודה על גמישות וכוח.", muscles: "מפרקי הירך וירכיים פנימיות.", springs: "🔵 (כחול) או 🟡 (צהוב)", equipment: "מכשיר רפורמר" }
         ];
 
         let myLesson = [];
@@ -655,15 +754,20 @@
                 let videoHtml = ex.videoUrl ? `<div class="ex-link"><a href="${ex.videoUrl}" target="_blank">צפה בסרטון הסבר 📺</a></div>` : '';
                 listEl.innerHTML += `
                     <div class="exercise-card">
-                        <div class="ex-info">
-                            <h4>${ex.name}</h4>
-                            <p><strong>${ex.category} • מטרה:</strong> ${ex.target} (${ex.duration} דק')</p>
-                            <p class="ex-desc">${ex.description}</p>
-                            <p class="ex-springs">קפיצים: ${ex.springs}</p>
-                            <p class="ex-equipment">אביזרים: ${ex.equipment}</p>
+                        <div class="ex-header-row">
+                            <div class="ex-info">
+                                <h4>${ex.name}</h4>
+                                <p><strong>${ex.category} • מטרה:</strong> ${ex.target} (${ex.duration} דק')</p>
+                            </div>
+                            <button class="primary-btn" onclick="addExercise(${ex.id})">הוספה</button>
+                        </div>
+                        <div class="ex-desc">${ex.description}</div>
+                        <div class="ex-tips">${ex.tips}</div>
+                        <div class="ex-meta-row">
+                            <span class="ex-springs">קפיצים: ${ex.springs}</span>
+                            <span class="ex-equipment">אביזרים: ${ex.equipment}</span>
                             ${videoHtml}
                         </div>
-                        <button class="primary-btn" onclick="addExercise(${ex.id})">הוספה</button>
                     </div>
                 `;
             });
@@ -826,7 +930,7 @@
             } else if (tabName === 'saved') {
                 document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
                 document.getElementById('tabSaved').classList.add('active');
-                activeAssignLessonTitle, activeAssignLessonTitle = null;
+                activeAssignLessonTitle = null;
             } else {
                 document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
                 document.getElementById('tabCalendar').classList.add('active');
@@ -849,7 +953,7 @@
             for (let i = 1; i <= 30; i++) {
                 let cellClass = "cal-cell";
                 if(activeAssignLessonTitle) {
-                    cellClass += " highlight-target	";
+                    cellClass += " highlight-target";
                 }
 
                 let cellContent = `<span class="day-num">${i}</span>`;
