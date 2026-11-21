@@ -2,1006 +2,182 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>EVERYDRAY - פלטפורמת פילאטיס בוטיק</title>
-    <style>
-        :root {
-            --bg-base: #FAF6F5;
-            --surface: #FFFFFF;
-            --primary: #9E6B7A;
-            --primary-light: #F7ECEF;
-            --accent: #D4AF37;
-            --dark: #3A3033;
-            --muted: #8C7B80;
-            --border: #EADBDF;
-            --danger: #D96B6B;
-            --radius: 18px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 18px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 20px rgba(158, 107, 122, 0.04);
-        }
-
-        .logo-area h1 {
-            color: var(--primary);
-            font-size: 1.6rem;
-            letter-spacing: 2px;
-            font-weight: 400;
-            margin-bottom: 2px;
-        }
-
-        .logo-area .sub-brand {
-            font-family: 'Georgia', serif;
-            font-size: 0.8rem;
-            color: var(--muted);
-            letter-spacing: 1.5px;
-            font-style: italic;
-            font-weight: 400;
-        }
-
-        .header-badge {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border: 1px solid rgba(158, 107, 122, 0.15);
-            white-space: nowrap;
-        }
-
-        .app-container {
-            max-width: 1500px;
-            margin: 20px auto;
-            padding: 0 15px;
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 20px;
-            flex: 1;
-            width: 100%;
-        }
-
-        @media (max-width: 1024px) {
-            .app-container {
-                grid-template-columns: 1fr;
-                padding: 0 10px;
-                margin: 10px auto;
-            }
-            header {
-                padding: 15px;
-            }
-        }
-
-        .card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: 0 10px 35px rgba(158, 107, 122, 0.05);
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-title {
-            font-size: 1.15rem;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-        }
-
-        .search-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .search-row input, .search-row select {
-            flex: 1;
-            min-width: 140px;
-            padding: 10px 14px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            background: #FCFAFA;
-            color: var(--dark);
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .search-row input:focus, .search-row select:focus {
-            border-color: var(--primary);
-            background: #FFF;
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .exercise-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: 580px;
-            overflow-y: auto;
-            padding-left: 4px;
-        }
-
-        .exercise-card {
-            background: #FCF9FA;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .exercise-card:hover {
-            border-color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .ex-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .ex-info h4 {
-            color: var(--primary);
-            font-size: 1rem;
-            margin-bottom: 3px;
-            font-weight: 600;
-        }
-
-        .ex-info p {
-            font-size: 0.8rem;
-            color: var(--muted);
-            margin-bottom: 2px;
-        }
-
-        .ex-desc {
-            font-size: 0.78rem;
-            color: #5A4E52;
-            line-height: 1.4;
-            background: #FFF;
-            padding: 8px 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(234, 219, 223, 0.6);
-        }
-
-        .ex-tips {
-            font-size: 0.76rem;
-            color: #8A5260;
-            background: var(--primary-light);
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .ex-meta-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            margin-top: 2px;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .ex-springs {
-            color: #C2825D;
-            font-weight: 700;
-        }
-
-        .ex-equipment {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .ex-link a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .ex-link a:hover { text-decoration: underline; }
-
-        button.primary-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            white-space: nowrap;
-        }
-        button.primary-btn:hover { background: #875564; }
-
-        button.calendar-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            white-space: nowrap;
-        }
-        button.calendar-btn:hover { background: #B8972D; }
-
-        .tabs-nav {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 15px;
-            background: var(--primary-light);
-            padding: 5px;
-            border-radius: 14px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 8px 2px;
-            border: none;
-            background: transparent;
-            font-weight: 600;
-            color: var(--muted);
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.78rem;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .tab-btn.active {
-            background: var(--surface);
-            color: var(--primary);
-            box-shadow: 0 4px 12px rgba(158, 107, 122, 0.1);
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: flex; flex-direction: column; flex: 1; }
-
-        .lesson-title-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            text-align: center;
-            background: #FCFAFA;
-            color: var(--primary);
-            margin-bottom: 12px;
-        }
-
-        .rest-builder-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .rest-builder-row select {
-            padding: 8px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: #FCFAFA;
-            font-size: 0.85rem;
-        }
-        .rest-add-btn {
-            background: #A6979D;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            flex: 1;
-            font-size: 0.85rem;
-            transition: background 0.2s;
-        }
-        .rest-add-btn:hover { background: #8E7D84; }
-
-        .lesson-items-list {
-            list-style: none;
-            min-height: 200px;
-            max-height: 300px;
-            overflow-y: auto;
-            border: 2px dashed var(--border);
-            border-radius: 14px;
-            padding: 10px;
-            background: #FCFAFA;
-            margin-bottom: 12px;
-        }
-
-        .lesson-items-list li {
-            background: white;
-            border: 1px solid var(--border);
-            padding: 8px 12px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            font-size: 0.85rem;
-            gap: 8px;
-        }
-
-        .lesson-items-list li.rest-item {
-            background: #F7ECEF;
-            border-style: dashed;
-            color: var(--primary);
-        }
-
-        .delete-btn {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 0.72rem;
-            cursor: pointer;
-        }
-        .delete-btn:hover { background: #BE5656; }
-
-        .summary-box {
-            border-top: 1px solid var(--border);
-            padding-top: 12px;
-            margin-top: auto;
-        }
-
-        .stats-row {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 12px;
-            color: var(--primary);
-        }
-
-        .save-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            cursor: pointer;
-            letter-spacing: 0.5px;
-            transition: background 0.2s;
-        }
-        .save-btn:hover { background: #875564; }
-
-        .saved-lessons-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .saved-lesson-card {
-            background: #FCF9FA;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .saved-info h5 {
-            color: var(--primary);
-            font-size: 0.95rem;
-            margin-bottom: 2px;
-        }
-
-        .saved-info p {
-            font-size: 0.78rem;
-            color: var(--muted);
-        }
-
-        .saved-actions {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .calendar-nav-title {
-            font-size: 1.05rem;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-
-        .cal-head {
-            text-align: center;
-            font-weight: 600;
-            color: var(--primary);
-            font-size: 0.75rem;
-            padding-bottom: 4px;
-        }
-
-        .cal-cell {
-            background: #FCFAFA;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            min-height: 70px;
-            padding: 4px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .cal-cell:hover {
-            border-color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .cal-cell.highlight-target {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
-            background: #FFFEF8;
-        }
-
-        .cal-cell .day-num {
-            font-weight: 600;
-            font-size: 0.78rem;
-            color: var(--dark);
-        }
-
-        .cal-cell .assigned-badge {
-            background: var(--primary);
-            color: white;
-            font-size: 0.58rem;
-            padding: 2px 3px;
-            border-radius: 4px;
-            word-break: break-word;
-            line-height: 1.1;
-        }
-
-        .cal-cell .remove-cal {
-            background: var(--danger);
-            color: white;
-            border: none;
-            font-size: 0.55rem;
-            padding: 1px;
-            border-radius: 3px;
-            cursor: pointer;
-            margin-top: 2px;
-        }
-    </style>
+    <meta name="description" content="פלטפורמה למדריכות פילאטיס: בניית שיעור מאפס ממאגר תרגילים, שמירת שיעורים ושיבוץ בלוח שנה מסודר.">
+    <meta name="theme-color" content="#FAF6F5">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌸%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2">
+    <script src="exercises.js?v=2" defer></script>
+    <script src="app.js?v=2" defer></script>
 </head>
-<body>
+<body data-view="builder">
 
-    <header>
-        <div class="logo-area">
-            <h1>EVERYDRAY</h1>
-            <div class="sub-brand">BY NOAH DRAY</div>
-        </div>
+    <header class="topbar">
+        <a class="brand" href="./" aria-label="EVERYDRAY - דף הבית">
+            <span class="logo">EVERYDRAY</span>
+            <span class="sub">BY NOAH DRAY</span>
+        </a>
+        <nav class="main-nav" aria-label="ניווט ראשי">
+            <button class="nav-btn active" data-action="nav" data-view="builder" data-icon="sparkle"><span>בניית שיעור</span></button>
+            <button class="nav-btn" data-action="nav" data-view="lessons" data-icon="book"><span>השיעורים שלי</span><span class="nav-count" id="lessonsCount">0</span></button>
+            <button class="nav-btn" data-action="nav" data-view="calendar" data-icon="calendar"><span>לוח שנה</span></button>
+        </nav>
         <div class="header-badge">סטודיו נשי ויוקרתי 🤍✨</div>
     </header>
 
-    <div class="app-container">
-        <!-- צד שמאל: מאגר התרגילים המלא עם הסברים מפורטים ודגשים בעברית -->
-        <div class="card">
-            <div class="card-title">
-                <span>מאגר תרגילים מקיף (53 תרגילים)</span>
+    <main class="app">
+
+        <!-- ===================== בניית שיעור ===================== -->
+        <section class="view active" id="view-builder" aria-label="בניית שיעור">
+            <div class="pane-switch" role="tablist" aria-label="מאגר או שיעור">
+                <button class="active" data-action="pane" data-pane="library" role="tab">מאגר התרגילים</button>
+                <button data-action="pane" data-pane="lesson" role="tab">השיעור שלי <span class="pane-badge" id="paneBadge">0</span></button>
             </div>
-            <div class="search-row">
-                <input type="text" id="searchInput" placeholder="חיפוש לפי שם, מטרה, קפיצים או אביזרים..." onkeyup="filterExercises()">
-                <select id="categoryFilter" onchange="filterExercises()">
-                    <option value="all">הכל</option>
-                    <option value="תרגילי חימום">תרגילי חימום</option>
-                    <option value="תרגילי מתיחות">תרגילי מתיחות</option>
-                    <option value="פילאטיס מזרן">פילאטיס מזרן</option>
-                    <option value="פילאטיס מכשיר">פילאטיס מכשיר</option>
+
+            <div class="builder-grid" id="builderGrid" data-pane="library">
+
+                <!-- מאגר תרגילים -->
+                <section class="card library" aria-label="מאגר התרגילים">
+                    <div class="card-head">
+                        <div>
+                            <h2>מאגר התרגילים</h2>
+                            <p class="muted small" id="libraryCount"></p>
+                        </div>
+                        <button class="btn sm outline" data-action="new-custom" data-icon="plus">תרגיל משלי</button>
+                    </div>
+                    <div class="search-box" data-icon="search">
+                        <input type="search" id="searchInput" class="input" placeholder="חיפוש לפי שם, מטרה, שרירים, קפיצים או אביזרים…" autocomplete="off" aria-label="חיפוש תרגילים">
+                    </div>
+                    <div class="chips" id="categoryChips" role="toolbar" aria-label="סינון לפי קטגוריה"></div>
+                    <div class="ex-list" id="exerciseList"></div>
+                </section>
+
+                <!-- השיעור בבנייה -->
+                <section class="card lesson-panel" id="lessonPanel" aria-label="השיעור שלי">
+                    <div class="lp-head">
+                        <div class="lp-status-row">
+                            <div class="lp-status" id="lessonStatus"></div>
+                            <button class="link-btn" data-action="new-lesson" data-icon="plus">שיעור חדש</button>
+                        </div>
+                        <input id="lessonTitle" class="lesson-title-input" maxlength="80" placeholder="שם השיעור" aria-label="שם השיעור">
+                        <div class="meta-row">
+                            <label class="mini-field"><span>רמה</span><select id="lessonLevel" class="input sm"></select></label>
+                            <label class="mini-field"><span>סוג שיעור</span><select id="lessonType" class="input sm"></select></label>
+                            <label class="mini-field"><span>משך יעד</span><select id="lessonTarget" class="input sm"></select></label>
+                        </div>
+                        <button class="link-btn" data-action="toggle-notes" id="notesToggle">+ פוקוס והערות לשיעור</button>
+                        <textarea id="lessonNotes" class="input" rows="2" maxlength="400" placeholder="למשל: דגש על ישבן ואגן, עבודה עם כדור קטן…" hidden></textarea>
+                    </div>
+
+                    <div class="lp-stats" id="lessonStats"></div>
+
+                    <div class="lp-toolbar">
+                        <div class="rest-group">
+                            <select id="restDuration" class="input sm" aria-label="משך המנוחה">
+                                <option value="1">דקה</option>
+                                <option value="2">2 דק׳</option>
+                                <option value="3">3 דק׳</option>
+                                <option value="5">5 דק׳</option>
+                            </select>
+                            <button class="btn sm" data-action="add-rest">+ מנוחה</button>
+                        </div>
+                        <button class="btn sm gold" data-action="open-draft" data-icon="sparkle">טיוטה אוטומטית</button>
+                        <span class="spacer"></span>
+                        <button class="icon-btn" data-action="preview-builder" data-icon="eye" title="תצוגה מקדימה והדפסה" aria-label="תצוגה מקדימה והדפסה"></button>
+                        <button class="icon-btn" data-action="clear-lesson" data-icon="trash" title="ניקוי כל התרגילים" aria-label="ניקוי כל התרגילים"></button>
+                    </div>
+
+                    <div class="lp-body" id="lessonDrop">
+                        <ol class="lesson-items" id="lessonItems"></ol>
+                        <div class="empty-lesson" id="emptyLesson">
+                            <div class="empty-flower">🌸</div>
+                            <p class="empty-title">השיעור שלך עדיין ריק</p>
+                            <p class="muted">לחצי על <b>+</b> ליד תרגיל במאגר (או גררי אותו לכאן),<br>או תני למערכת להרכיב לך טיוטה ראשונה לפי סוג וזמן השיעור.</p>
+                            <button class="btn gold" data-action="open-draft" data-icon="sparkle">טיוטה אוטומטית</button>
+                        </div>
+                    </div>
+
+                    <div class="lp-checks" id="lessonChecks"></div>
+                    <div class="lp-foot" id="lessonFoot"></div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ===================== השיעורים שלי ===================== -->
+        <section class="view" id="view-lessons" aria-label="השיעורים שלי">
+            <div class="page-head">
+                <div>
+                    <h1>השיעורים שלי</h1>
+                    <p class="muted">כל השיעורים ששמרת — לצפייה, עריכה, הדפסה ושיבוץ בלוח השנה.</p>
+                </div>
+                <button class="btn primary" data-action="new-lesson" data-icon="plus">שיעור חדש</button>
+            </div>
+            <div class="lessons-toolbar">
+                <div class="search-box" data-icon="search">
+                    <input type="search" id="lessonsSearch" class="input" placeholder="חיפוש שיעור…" autocomplete="off" aria-label="חיפוש שיעור">
+                </div>
+                <select id="lessonsSort" class="input" aria-label="מיון">
+                    <option value="updated">עודכנו לאחרונה</option>
+                    <option value="title">לפי שם</option>
+                    <option value="duration">לפי משך</option>
+                    <option value="next">לפי השיבוץ הקרוב</option>
                 </select>
             </div>
-            <div class="exercise-list" id="exerciseList">
-                <!-- יטענו דינמית -->
-            </div>
-        </div>
+            <div class="lessons-grid" id="lessonsGrid"></div>
 
-        <!-- צד ימין: טאבים לניהול שיעור, ארכיון שיעורים ולוח שנה -->
-        <div class="card">
-            <div class="tabs-nav">
-                <button class="tab-btn active" onclick="switchTab('builder')">הרכבת שיעור</button>
-                <button class="tab-btn" onclick="switchTab('saved')">שיעורים שמורים (<span id="savedCount">0</span>)</button>
-                <button class="tab-btn" onclick="switchTab('calendar')">לוח שנה</button>
-            </div>
-
-            <!-- טאב בונה שיעור -->
-            <div class="tab-content active" id="tabBuilder">
-                <input type="text" class="lesson-title-input" id="lessonTitle" value="שיעור פילאטיס בוטיק 🌸">
-                
-                <div class="rest-builder-row">
-                    <select id="restDuration">
-                        <option value="1">דקת מנוחה</option>
-                        <option value="2">2 דקות מנוחה</option>
-                        <option value="3">3 דקות מנוחה</option>
-                        <option value="5">5 דקות מנוחה</option>
-                    </select>
-                    <button class="rest-add-btn" onclick="addRest()">+ הוסף הפסקת מנוחה</button>
+            <section class="card backup-card">
+                <div>
+                    <h3>גיבוי והעברה בין מכשירים 💾</h3>
+                    <p class="muted">השיעורים והלוח נשמרים בדפדפן של המכשיר הזה. כדי לא לאבד אותם, או כדי לעבור לטלפון/מחשב אחר, הורידי קובץ גיבוי וייבאי אותו במכשיר השני.</p>
                 </div>
-
-                <ul class="lesson-items-list" id="lessonItems">
-                    <p style="color: var(--muted); text-align: center; margin-top: 50px; font-size: 0.9rem;" id="emptyMsg">השיעור שלך עדיין ריק.<br>הוסיפי תרגילים ממאגר השמאל.</p>
-                </ul>
-
-                <div class="summary-box">
-                    <div class="stats-row">
-                        <span>סה"כ פריטים: <span id="exerciseCount">0</span></span>
-                        <span>משך השיעור: <span id="totalTime">0</span> דקות</span>
-                    </div>
-                    <button class="save-btn" onclick="saveLesson()">שמור שיעור במערכת 🌸</button>
+                <div class="backup-actions">
+                    <button class="btn" data-action="export-backup" data-icon="download">הורדת גיבוי</button>
+                    <button class="btn" data-action="import-backup" data-icon="upload">ייבוא גיבוי</button>
+                    <input type="file" id="importFile" accept=".json,application/json" hidden>
                 </div>
-            </div>
+            </section>
+        </section>
 
-            <!-- טאב שיעורים שמורים (ארכיון) -->
-            <div class="tab-content" id="tabSaved">
-                <h3 style="font-size: 1rem; color: var(--primary); margin-bottom: 10px;">ארכיון השיעורים שלך</h3>
-                <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">כאן תוכלו לפתוח שיעורים לעריכה, למחוק אותם, או לשבץ ללוח השנה.</p>
-                <div class="saved-lessons-container" id="savedLessonsList">
-                    <p style="color: var(--muted); text-align: center; margin-top: 30px;">עדיין אין שיעורים שמורים במערכת.</p>
-                </div>
-            </div>
-
-            <!-- טאב לוח שנה -->
-            <div class="tab-content" id="tabCalendar">
-                <div class="calendar-nav-title" id="calendarTitle">נובמבר 2026 📅</div>
-                <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; text-align: center;" id="calendarInstruction">לחצי על תאריך בלוח כדי לשבץ אליו את השיעור שבנית.</p>
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- יטענו דינמית -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const allExercises = [
-            { 
-                id: 1, name: "חתול ופרה (Cat & Cow)", category: "תרגילי חימום", target: "ניידות עמוד שדרה", duration: 3, 
-                description: "עמידת שש מדויקת. בשאיפה מקערים את הגב ומסתכלים קדימה, ובנשיפה מעגלים את עמוד השדרה כלפי מעלה תוך הכנסת בטן עמוקה.", 
-                tips: "דגש: תנועה חלקה מחוליה לחוליה; הימנעו מדחיפת כתפיים אל האוזניים.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
-            },
-            { 
-                id: 2, name: "גלגול עמוד שדרה בעמידה", category: "תרגילי חימום", target: "הארכת גב וחימום", duration: 3, 
-                description: "עמידה זקופה, כפיפה רכה של הסנטר והורדת הראש חוליה אחר חוליה מטה עד להגעת הידיים לכיוון הרצפה, וחזרה איטית.", 
-                tips: "דגש: שמרו על ברכיים רכות מעט (לא נעולות) ועבדו נגד כוח הכובד.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (עמידה)" 
-            },
-            { 
-                id: 3, name: "עבודת רגליים - חימום (Footwork)", category: "תרגילי חימום", target: "חימום רגליים ומפרקים", duration: 5, 
-                description: "שכיבה על גבי העגלה ברפורמר, הנחת כפות הרגליים על הבר ודחיפה מבוקרת של העגלה תוך שמירה על יציבות האגן.", 
-                tips: "דגש: יישור מלא של הברכיים בלי לנעול פרקים, ושליטה מלאה בחזרה.", 
-                springs: "🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" 
-            },
-            { 
-                id: 4, name: "הטות אגן (Pelvic Tilts)", category: "תרגילי חימום", target: "ניידות אגן ובטן עמוקה", duration: 3, 
-                description: "שכיבה על הגב עם ברכיים כפופות. הטיית האגן לאחור כך שהגב התחתון נצמד לחלוטין למזרן, ולאחר מכן חזרה לקשת טבעית קטנה.", 
-                tips: "דגש: התנועה יוצאת מהבטן התחתונה ולא מכיווץ הישבן.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
-            },
-            { 
-                id: 5, name: "בת הים קלאסית (Mermaid)", category: "תרגילי מתיחות", target: "מתיחת צידי גוף", duration: 4, 
-                description: "ישיבת זاز (רגליים מקופלות לצד), הרמת יד אחת מעלה וכפיפת הגו הצידה להארכת מרבית של שרירי הצלעות והמותן.", 
-                tips: "דגש: שמרו על שתי עצמות הישיבה דבוקות למזרן/עגלה בזמן הכפיפה.", 
-                springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר" 
-            },
-            { 
-                id: 6, name: "מתיחת עמוד שדרה קדימה", category: "תרגילי מתיחות", target: "שחרור גב עליון", duration: 3, 
-                description: "ישיבה עם רגליים פתוחות ברוחב האגן וישרות לפנים. שאיפה להארכה ונשיפה לכפוף את הגו קדימה מעל האגן.", 
-                tips: "דגש: דמיינו שאתם מתכופפים מעל כדור ענק בלי לקרוס באזור המותניים.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
-            },
-            { 
-                id: 7, name: "מתיחת ירך אחורית ברצועות", category: "תרגילי מתיחות", target: "מתיחת ירך אחורית", duration: 4, 
-                description: "שכיבה על הרפורמר עם רצועות המחוזקות לכפות הרגליים, והורדה והעלאה של הרגליים תוך מתיחת הירך האחורית.", 
-                tips: "דגש: שמרו על אגן רחב ויציב על המזרן לאורך כל התנועה.", 
-                springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות רגליים" 
-            },
-            { 
-                id: 8, name: "פתיחת חזה וכתפיים", category: "תרגילי מתיחות", target: "פתיחת חזה וכתפיים", duration: 3, 
-                description: "ישיבה או עמידה על הברכיים, אחיזת רצועות הרפורמר ומשיכתן לאחור תוך פתיחת בית החזה לרווחה.", 
-                tips: "דגש: כיווץ קל של השכמות לאחור ושמירה על צוואר ארוך.", 
-                springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + רצועות ידיים" 
-            },
-            { 
-                id: 9, name: "המאן (The Hundred)", category: "פילאטיס מזרן", target: "בטן ונשימה", duration: 5, 
-                description: "שכיבה על הגב, הרמת ראש ושכמות באוויר, רגליים בטבלא טופ (או ישרות באלכסון), והנעת ידיים קצובה למעלה ולמטה.", 
-                tips: "דגש: 5 פעימות לשאיפה ו-5 פעימות לנשיפה; שמירה הדוקה על בטן אסوفة.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
-            },
-            { 
-                id: 10, name: "רול אפ (Roll Up)", category: "פילאטיס מזרן", target: "עמוד שדרה ובטן", duration: 4, 
-                description: "שכיבה מלאה על הגב, ידיים מעל הראש. בשאיפה מרימים ידיים, ובנשיפה גוללים את עמוד השדרה חוליה אחר חוליה עד לישיבה ונגיעת בהונות.", 
-                tips: "דגש: תנועה רציפה וללא תנופה מהירה.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
-            },
-            { 
-                id: 11, name: "רול אובר (Roll Over)", category: "פילאטיס מזרן", target: "גב עליון ושליטה", duration: 4, 
-                description: "שכיבה על הגב, הרמת רגליים למעלה והעברתן מעבר לראש בשליטה מלאה תוך כדי שימוש בבטן העמוקה.", 
-                tips: "דגש: אין ליצור לחץ על חוליות הצוואר; המשקל נשען על השכמות.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
-            },
-            { 
-                id: 12, name: "מעגל רגל בודדת (One Leg Circle)", category: "פילאטיס מזרן", target: "יציבות אגן וירכיים", duration: 4, 
-                description: "שכיבה על הגב, רגל אחת ישרה מעלה והשנייה ישרה על המזרן. ציור מעגלים מדויקים באוויר עם הרגל המורמת.", 
-                tips: "דגש: האגן חייב להישאר מקובע לחלוטין בלי להתנדנד מצד לצד.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
-            },
-            { 
-                id: 13, name: "גיהוץ כדור (Rolling Like a Ball)", category: "פילאטיס מזרן", target: "עיסוי גב ושיווי משקל", duration: 3, 
-                description: "ישיבה קומפקטית ואסופה, אחיזת השוקיים, גלגול לאחור עד לשכמות וחזרה מדויקת לישיבה ללא נפילת הרגליים.", 
-                tips: "דגש: שמרו על גב עגול ואחיד כמו כדור לאורך כל הגלגול.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
-            },
-            { 
-                id: 14, name: "מתיחת רגל אחת (Single Leg Stretch)", category: "פילאטיס מזרן", target: "ליבה ובטן", duration: 4, 
-                description: "שכיבה עם ראש וכתפיים מורמים, יד אחת על הברך השנייה ורגל נגדית פשוטה באוויר. החלפה קצבית של הרגליים.", 
-                tips: "דגש: שמרו על מרכז גוף יציב והרחקה של הכתפיים מהאוזניים.", 
-                springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" 
-            },
-            { 
-                id: 15, name: "מתיחת שתי רגליים (Double Leg Stretch)", category: "פילאטיס מזרן", target: "חיזוק בטן עמוקה", duration: 4, description: "איסוף ברכיים אל החזה, הרחקת ידיים מעל הראש ושתי רגליים באלכסון במקביל, וחזרה למרכז.", muscles: "ליבה ובטן רוחבית.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 16, name: "מתיחת עמוד שדרה (Spine Stretch)", category: "פילאטיס מזרן", target: "שחרור גב ומתיחה", duration: 3, description: "ישיבה זקופה ופיסוק קל, הושטת ידיים קדימה וקמירת הגב מעבר לאגן להארכה מרבית.", muscles: "גב עליון וזוקפי גב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 17, name: "רוקר רגליים פתוחות (Open Leg Rocker)", category: "פילאטיס מזרן", target: "שיווי משקל ושליטה", duration: 4, description: "איזון על עצמות הישיבה כשהרגליים פתוחות וישרות באחיזת קרסוליים, וגלגול לאחור וחזרה.", muscles: "בטן אלכסונית ושיווי משקל.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 18, name: "חולץ פקקים (Corkscrew)", category: "פילאטיס מזרן", target: "בטן אלכסונית ויציבות", duration: 5, description: "שכיבה על הגב וציור מעגלים רחבים עם שתי הרגליים יחד בשליטה מוחלטת של שרירי הבטן.", muscles: "אלכסוני הבטן ומייצבי אגן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 19, name: "המסור (Saw)", category: "פילאטיס מזרן", target: "רוטציה של עמוד שדרה", duration: 4, description: "ישיבה רחבה, סיבוב הגו ימינה ושליחת היד השמאלית לעבר כף הרגל הנגדית בתנועת ניסור.", muscles: "בטן אלכסונית ורוטטורים של הגב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 20, name: "שחיית ברבור (Swan Dive)", category: "פילאטיס מזרן", target: "חיזוק זוקפי גב", duration: 4, description: "שכיבה על הבטן, הרמת החזה והידיים מעלה תוך הפעלת זוקפי הגב והישבן.", muscles: "זוקפי גב, ישבן ושכמות.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 21, name: "בעיטת רגל בודדת (Single Leg Kick)", category: "פילאטיס מזרן", target: "ירך אחורית וישבן", duration: 4, description: "הישענות על האמות בשכיבה על הבטן, וביצוע שתי בעיטות מהירות עם העקב אל הישבן בכל רגל לסירוגין.", muscles: "ירך אחורית וישבן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 22, name: "בעיטת שתי רגליים (Double Leg Kick)", category: "פילאטיס מזרן", target: "גב עליון וישבן", duration: 4, description: "ראש מוטה לצד אחד, שילוב ידיים בגב התחתון, שלוש בעיטות רגליים יחד ואז פתיחת גוף מלאה.", muscles: "גב עליון וישבן.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 23, name: "משיכת צוואר (Neck Pull)", category: "פילאטיס מזרן", target: "שליטה בעמוד שדרה", duration: 4, description: "שכיבה על הגב, ידיים מאחורי הראש, גלגול איטי קדימה ושמירה על גב ארוך.", muscles: "בטן ישרה וזוקפי גב.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 24, name: "סדרת בעיטות צד (Side Kick Series)", category: "פילאטיס מזרן", target: "ירכיים וישבן צדדי", duration: 6, description: "שכיבה על הצד, ייצוב הגוף והנפת הרגל העליונה קדימה ואחורה.", muscles: "מרחיקי ירך (Gluteus Medius).", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 25, name: "טיזר (Teaser)", category: "פילאטיס מזרן", target: "שיווי משקל ובטן עליונה", duration: 5, description: "עליה בו זמנית של פלג הגוף העליון והרגליים ליצירת צורת V מושלמת.", muscles: "בטן עמוקה ושיווי משקל.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 26, name: "גשר הכתפיים (Shoulder Bridge)", category: "פילאטיס מזרן", target: "ישבן, ירך אחורית ועמוד שדרה", duration: 4, description: "הרמת האגן חוליה אחר חוליה עד לקו ישר מהברכיים ועד הכתפיים.", muscles: "ישבן וירך אחורית.", springs: "ללא קפיצים", equipment: "ללא אביזרים (מזרן)" },
-            { id: 27, name: "עבודת רגליים ברפורמר (Footwork)", category: "פילאטיס מכשיר", target: "חימום רגליים ואגן", duration: 6, description: "דחיפת עגלת הרפורמר עם בהונות, עקבים או קשתות כף הרגל לחיזוק שרירי הרגליים.", muscles: "ארבע ראשי, שוקיים וירך אחורית.", springs: "🟢 + 🔴 (ירוק + אדום)", equipment: "מכשיר רפורמר" },
-            { id: 28, name: "מתיחת גידים (Tendon Stretch)", category: "פילאטיס מכשיר", target: "שיווי משקל וקרסוליים", duration: 4, description: "עמידה על קצה העגלה ודחיפתה קדימה בשליטה מלאה של הקרסוליים והשוקיים.", muscles: "שוקיים וקרסוליים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 29, name: "המאן ברפורמר (The Hundred)", category: "פילאטיס מכשיר", target: "בטן ונשימה עם התנגדות", duration: 5, description: "תרגיל המאן הקלאסי בשילוב החזקת רצועות המכשיר בידיים ליצירת התנגדות נוספת.", muscles: "שרירי ליבה ובטן.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות ידיים" },
-            { id: 30, name: "אובראד (Overhead)", category: "פילאטיס מכשיר", target: "שליטה בגב עליון ואגן", duration: 4, description: "שכיבה על הרפורמר, משיכת הרצועות והעברת הרגליים מעבר לראש בשליטה.", muscles: "בטן תחתונה וגב עליון.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות" },
-            { id: 31, name: "תיאום גפיים (Coordination)", category: "פילאטיס מכשיר", target: "תיאום גפיים ונשימה", duration: 4, description: "תיאום מדויק בין פתיחת הידיים והרגליים לבין סגירת ופתיחת העגלה.", muscles: "בטן, ידיים ורגליים.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + רצועות" },
-            { id: 32, name: "סדרת חתירה (Rowing Series)", category: "פילאטיס מכשיר", target: "חגורת כתפיים וגב", duration: 6, description: "סדרת חתירה קלאסית עם רצועות מישיבה זקופה על קצה הרפורמר.", muscles: "שכמות וגב עליון.", springs: "🟡 (צהוב) או 🔵 (כחול)", equipment: "מכשיר רפורמר + רצועות ידיים" },
-            { id: 33, name: "ברבור בקופסה ארוכה (Long Box - Swan)", category: "פילאטיס מכשיר", target: "זוקפי גב עליון", duration: 5, description: "שכיבה על הבטן על קופסה ארוכה, הרמת החזה והידיים למעלה ולפנים.", muscles: "זוקפי גב עליון ושכמות.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + קופסה ארוכה (Long Box)" },
-            { id: 34, name: "משיכת רצועות בקופסה (Long Box - Pull Straps)", category: "פילאטיס מכשיר", target: "שכמות ויציבה", duration: 5, description: "משיכת רצועות לאחור בשכיבה על הבטן בקופסה ארוכה לחיזוק הגב העליון.", muscles: "כתפיים אחוריות ושכמות.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + קופסה ארוכה ורצועות" },
-            { id: 35, name: "שחיית גב בקופסה (Long Box - Backstroke)", category: "פילאטיס מכשיר", target: "בטן ותיאום תנועה", duration: 5, description: "שכיבה על הגב בקופסה ארוכה עם רצועות בידיים וברגליים וביצוע פתיחות תנועתיות.", muscles: "בטן ושיווי משקל.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר + קופסה ארוכה ורצועות" },
-            { id: 36, name: "טיזר בקופסה ארוכה (Long Box - Teaser)", category: "פילאטיס מכשיר", target: "בטן ושיווי משקל", duration: 5, description: "עלייה לטיזר מאוזן ויציב מעל גבי הקופסה הארוכה.", muscles: "בטן עמוקה ושיווי משקל.", springs: "🟡 (צהוב - הכי חלש)", equipment: "מכשיר רפורמר + קופסה ארוכה ורצועות" },
-            { id: 37, name: "חזה ורכיבה בקופסה (Breaststroke & Horseback)", category: "פילאטיס מכשיר", target: "חיזוק גב עמוק וירכיים", duration: 5, description: "תרגילי מעבר קלאסיים על קופסה ארוכה לעבודה על יציבה וירכיים פנימיות.", muscles: "גב וירכיים פנימיות.", springs: "🟡 או 🔵 (צהוב / כחול)", equipment: "מכשיר רפורמר + קופסה ארוכה" },
-            { id: 38, name: "סדרת מתיחה ארוכה (Long Stretch)", category: "פילאטיס מכשיר", target: "כוח ליבה ויציבות", duration: 6, description: "מנח פלאנק חזק על מסגרת ועגלת הרפורמר, והזזת הגוף קדימה ואחורה.", muscles: "ליבה מלאה וכתפיים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 39, name: "פיל (Elephant)", category: "פילאטיס מכשיר", target: "רגליים ויציבה", duration: 6, description: "עמידה עם עקבים על העגלה וגב מעט עגול, פתיחה וסגירת העגלה מהבטן.", muscles: "בטן תחתונה וירך אחורית.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 40, name: "מתיחת גב אחורית (Long Back Stretch)", category: "פילאטיס מכשיר", target: "כתפיים ושליטה בקרש", duration: 4, description: "שליטה בעגלה ממנח פלאנק הפוך תוך שמירה על חגורת כתפיים חזקה.", muscles: "חגורת כתפיים ויציבה.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 41, name: "סדרת עיסוי בטן (Stomach Massage)", category: "פילאטיס מכשיר", target: "בטן ורגליים", duration: 7, description: "ישיבה על קצה העגלה ודחיפת הבר ברגליים בווריאציות שונות ודגש על יציבה.", muscles: "ירך קדמית ובטן עמוקה.", springs: "🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" },
-            { id: 42, name: "סדרת קופסה קצרה (Short Box Series)", category: "פילאטיס מכשיר", target: "בטן, זוקפי גב ומתיחות", duration: 8, description: "כפיפות לאחור ולצדדים ומתיחות רגליים על גבי קופסה קצרה.", muscles: "בטן, זוקפי גב ואלכסונים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + קופסה קצרה (Short Box)" },
-            { id: 43, name: "עיסוי עמוד שדרה קצר (Short Spine)", category: "פילאטיס מכשיר", target: "ניידות עמוד שדרה", duration: 5, description: "שכיבה עם רגליים ברצועות וגלילת האגן מעלה להרמת עמוד השדרה חוליה אחר חוליה.", muscles: "בטן תחתונה וגב.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות רגליים" },
-            { id: 44, name: "חצי עיגול (Semi Circle)", category: "פילאטיס מכשיר", target: "ניידות אגן וגב", duration: 5, description: "תנועה מעגלית ומודרגת עם האגן על העגלה לשחרור עמוד השדרה.", muscles: "אגן ועמוד שדרה.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 45, name: "הרחבת חזה ומעגלי ידיים", category: "פילאטיס מכשיר", target: "יציבה ונשימה עמוקה", duration: 5, description: "תרגילי עמידה או ישיבה עם רצועות לחיזוק חגורת הכתפיים.", muscles: "כתפיים וחזה.", springs: "🟡 (צהוב) או 🔵 (כחול)", equipment: "מכשיר רפורמר + רצועות ידיים" },
-            { id: 46, name: "מתיחת ירך קדמית (Thigh Stretch)", category: "פילאטיס מכשיר", target: "ירך קדמית וליבה", duration: 4, description: "כפיפה מבוקרת לאחור בעמידת ברכיים על העגלה לשחרור וחיזוק הירך הקדמית.", muscles: "ירך קדמית ובטן.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר" },
-            { id: 47, name: "נחש וסיבוב (Snake & Twist)", category: "פילאטיס מכשיר", target: "כוח מתקדם ואלכסונים", duration: 5, description: "תרגיל מתקדם בשליטה צדדית ומעבר דינמי על העגלה.", muscles: "אלכסוני הבטן ומייצבי כתפיים.", springs: "🔵 (כחול - בינוני)", equipment: "מכשיר רפורמר" },
-            { id: 48, name: "חולץ פקקים וטיק טוק (Corkscrew)", category: "פילאטיס מכשיר", target: "שליטה באגן ורוטציה", duration: 5, description: "תרגילי רגליים מתקדמים באוויר בשילוב רצועות הרפורמר.", muscles: "בטן תחתונה ואלכסונים.", springs: "🔴 (אדום אחד - חזק)", equipment: "מכשיר רפורמר + רצועות" },
-            { id: 49, name: "מעגלי רגליים וצפרדע ברצועות (Frogs)", category: "פילאטיס מכשיר", target: "מפרק הירך ויציבות", duration: 6, description: "ביצוע מעגלי רגליים ותנועות צפרדע כשהרגליים מחוזקות ברצועות הרפורמר.", muscles: "מפרקי הירך וירכיים פנימיות.", springs: "🔴 (אדום) או 🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר + רצועות רגליים" },
-            { id: 50, name: "סדרת מתיחות ברכיים (Knee Stretches)", category: "פילאטיס מכשיר", target: "בטן תחתונה ויציבות", duration: 6, description: "עמידת שש על העגלה והנעת הברכיים קדימה ואחורה בשליטה מלאה.", muscles: "בטן עמוקה ומייצבי אגן.", springs: "🔴 (אדום) או 🔵 (כחול)", equipment: "מכשיר רפורמר" },
-            { id: 51, name: "ריצה על רפורמר והרמת אגן", category: "פילאטיס מכשיר", target: "קרסוליים וישבן", duration: 5, description: "ריצה קצבית על הרפורמר לסירוגין והרמות אגן לשחרור.", muscles: "שוקיים וישבן.", springs: "🟢 + 🔴 (ירוק + אדום)", equipment: "מכשיר רפורמר" },
-            { id: 52, name: "שכיבות סמיכה ברפורמר (Push Up)", category: "פילאטיס מכשיר", target: "פלג גוף עליון", duration: 5, description: "שכיבות סמיכה מתקדמות מעל כתפיות הרפורמר.", muscles: "חזה, יד אחורית וכתפיים.", springs: "🔴 (אדום) או 🔴🔴 (2 אדומים)", equipment: "מכשיר רפורמר" },
-            { id: 53, name: "שפגאט צד וקדמי (Side & Front Splits)", category: "פילאטיס מכשיר", target: "גמישות וירכיים", duration: 6, description: "פיסוק ושפגאט מבוקר על העגלה והמסגרת לעבודה על גמישות וכוח.", muscles: "מפרקי הירך וירכיים פנימיות.", springs: "🔵 (כחול) או 🟡 (צהוב)", equipment: "מכשיר רפורמר" }
-        ];
-
-        let myLesson = [];
-        
-        // טעינת שיעורים שמורים ולוח שנה מזיכרון הדפדפן (localStorage) אם קיימים
-        let savedLessons = JSON.parse(localStorage.getItem('everydray_savedLessons')) || []; 
-        let calendarData = JSON.parse(localStorage.getItem('everydray_calendarData')) || {};
-        let activeAssignLessonTitle = null;
-
-        function renderExercises(exercisesToRender) {
-            const listEl = document.getElementById('exerciseList');
-            listEl.innerHTML = '';
-            
-            if (exercisesToRender.length === 0) {
-                listEl.innerHTML = `<p style="color: var(--muted); text-align: center; margin-top: 30px;">לא נמצאו תרגילים מתאימים.</p>`;
-                return;
-            }
-
-            exercisesToRender.forEach(ex => {
-                let videoHtml = ex.videoUrl ? `<div class="ex-link"><a href="${ex.videoUrl}" target="_blank">צפה בסרטון הסבר 📺</a></div>` : '';
-                listEl.innerHTML += `
-                    <div class="exercise-card">
-                        <div class="ex-header-row">
-                            <div class="ex-info">
-                                <h4>${ex.name}</h4>
-                                <p><strong>${ex.category} • מטרה:</strong> ${ex.target} (${ex.duration} דק')</p>
-                            </div>
-                            <button class="primary-btn" onclick="addExercise(${ex.id})">הוספה</button>
+        <!-- ===================== לוח שנה ===================== -->
+        <section class="view" id="view-calendar" aria-label="לוח שנה">
+            <div class="cal-layout">
+                <section class="card cal-main">
+                    <div class="cal-toolbar">
+                        <div class="cal-nav">
+                            <button class="icon-btn" data-action="cal-prev" data-icon="chev-right" aria-label="הקודם"></button>
+                            <h2 id="calTitle"></h2>
+                            <button class="icon-btn" data-action="cal-next" data-icon="chev-left" aria-label="הבא"></button>
                         </div>
-                        <div class="ex-desc">${ex.description}</div>
-                        <div class="ex-tips">${ex.tips}</div>
-                        <div class="ex-meta-row">
-                            <span class="ex-springs">קפיצים: ${ex.springs}</span>
-                            <span class="ex-equipment">אביזרים: ${ex.equipment}</span>
-                            ${videoHtml}
+                        <button class="btn sm" data-action="cal-today">היום</button>
+                        <div class="seg" id="calModeSeg">
+                            <button data-action="cal-mode" data-mode="month">חודש</button>
+                            <button data-action="cal-mode" data-mode="week">שבוע</button>
                         </div>
+                        <span class="spacer"></span>
+                        <button class="btn sm outline" data-action="export-ics" data-icon="download" title="הורדת קובץ ‎.ics‎ לייבוא ל-Google Calendar / יומן אייפון">ייצוא ליומן</button>
                     </div>
-                `;
-            });
-        }
+                    <p class="cal-stats" id="calStats"></p>
+                    <div id="calBody"></div>
+                </section>
 
-        function filterExercises() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
-            const selectedCategory = document.getElementById('categoryFilter').value;
+                <aside class="cal-side">
+                    <section class="card day-panel" id="dayPanel"></section>
+                    <section class="card">
+                        <h3 class="side-title">השיעורים הקרובים</h3>
+                        <div id="upcomingList"></div>
+                    </section>
+                </aside>
+            </div>
+        </section>
+    </main>
 
-            const filtered = allExercises.filter(ex => {
-                const matchesSearch = ex.name.toLowerCase().includes(searchText) || ex.target.toLowerCase().includes(searchText) || ex.description.toLowerCase().includes(searchText) || ex.springs.toLowerCase().includes(searchText) || ex.equipment.toLowerCase().includes(searchText);
-                const matchesCategory = selectedCategory === 'all' || ex.category === selectedCategory;
-                return matchesSearch && matchesCategory;
-            });
+    <div id="modalRoot"></div>
+    <div id="toastRoot" aria-live="polite"></div>
+    <div id="printArea"></div>
 
-            renderExercises(filtered);
-        }
-
-        function addExercise(id) {
-            const ex = allExercises.find(item => item.id === id);
-            myLesson.push({...ex, uniqueId: 'ex_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9)});
-            renderLesson();
-        }
-
-        function addRest() {
-            const minutes = parseInt(document.getElementById('restDuration').value);
-            myLesson.push({
-                name: `הפסקת מנוחה`,
-                category: 'התאוששות',
-                duration: minutes,
-                type: 'rest',
-                uniqueId: 'rest_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9)
-            });
-            renderLesson();
-        }
-
-        function removeExercise(uniqueId) {
-            myLesson = myLesson.filter(item => item.uniqueId !== uniqueId);
-            renderLesson();
-        }
-
-        function renderLesson() {
-            const lessonEl = document.getElementById('lessonItems');
-            const countEl = document.getElementById('exerciseCount');
-            const timeEl = document.getElementById('totalTime');
-
-            lessonEl.innerHTML = '';
-            
-            if (myLesson.length === 0) {
-                lessonEl.innerHTML = `<p style="color: var(--muted); text-align: center; margin-top: 50px; font-size: 0.9rem;" id="emptyMsg">השיעור שלך עדיין ריק.<br>הוסיפי תרגילים ממאגר השמאל.</p>`;
-                countEl.innerText = '0';
-                timeEl.innerText = '0';
-                return;
-            }
-
-            let totalTime = 0;
-            myLesson.forEach((item, index) => {
-                totalTime += item.duration;
-                if (item.type === 'rest') {
-                    lessonEl.innerHTML += `
-                        <li class="rest-item">
-                            <span><strong>${index + 1}.</strong> 🌸 ${item.name} (${item.duration} דק')</span>
-                            <button class="delete-btn" onclick="removeExercise('${item.uniqueId}')">הסרה</button>
-                        </li>
-                    `;
-                } else {
-                    lessonEl.innerHTML += `
-                        <li>
-                            <span><strong>${index + 1}.</strong> ${item.name} <small>(${item.category})</small> - ${item.duration} דק'</span>
-                            <button class="delete-btn" onclick="removeExercise('${item.uniqueId}')">הסרה</button>
-                        </li>
-                    `;
-                }
-            });
-
-            countEl.innerText = myLesson.length;
-            timeEl.innerText = totalTime;
-        }
-
-        function saveLesson() {
-            const title = document.getElementById('lessonTitle').value;
-            if (myLesson.length === 0) {
-                alert("אי אפשר לשמור שיעור ריק! הוסיפי לפחות תרגיל אחד.");
-                return;
-            }
-
-            let totalTime = myLesson.reduce((sum, item) => sum + item.duration, 0);
-            
-            savedLessons.push({
-                id: 'lesson_' + Date.now(),
-                title: title,
-                items: [...myLesson],
-                totalTime: totalTime,
-                count: myLesson.length
-            });
-
-            // שמירה בזיכרון המקומי של הדפדפן
-            localStorage.setItem('everydray_savedLessons', JSON.stringify(savedLessons));
-
-            renderSavedLessons();
-            alert(`השיעור "${title}" נשמר בהצלחה לארכיון השיעורים שלך! 🌸`);
-            switchTab('saved');
-        }
-
-        function renderSavedLessons() {
-            const container = document.getElementById('savedLessonsList');
-            document.getElementById('savedCount').innerText = savedLessons.length;
-            
-            if (savedLessons.length === 0) {
-                container.innerHTML = `<p style="color: var(--muted); text-align: center; margin-top: 30px;">עדיין אין שיעורים שמורים במערכת.</p>`;
-                return;
-            }
-
-            container.innerHTML = '';
-            savedLessons.forEach((lesson) => {
-                container.innerHTML += `
-                    <div class="saved-lesson-card">
-                        <div class="saved-info">
-                            <h5>${lesson.title}</h5>
-                            <p>${lesson.count} פריטים • ${lesson.totalTime} דקות</p>
-                        </div>
-                        <div class="saved-actions">
-                            <button class="primary-btn" onclick="loadLesson('${lesson.id}')">עריכה ✏️</button>
-                            <button class="calendar-btn" onclick="prepareCalendarAssignment('${lesson.title}')">הכנס ללוח שנה 📅</button>
-                            <button class="delete-btn" onclick="deleteSavedLesson('${lesson.id}')">מחק</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function loadLesson(lessonId) {
-            const lesson = savedLessons.find(l => l.id === lessonId);
-            if (lesson) {
-                document.getElementById('lessonTitle').value = lesson.title;
-                myLesson = JSON.parse(JSON.stringify(lesson.items));
-                renderLesson();
-                switchTab('builder');
-                alert(`השיעור "${lesson.title}" נטען בהצלחה לעריכה! 🤍`);
-            }
-        }
-
-        function prepareCalendarAssignment(lessonTitle) {
-            activeAssignLessonTitle = lessonTitle;
-            switchTab('calendar');
-            document.getElementById('calendarInstruction').innerHTML = `נבחר השיעור: <strong style="color:var(--primary);">${lessonTitle}</strong>.<br>כעת לחצי על היום הרצוי בלוח כדי לשבץ אותו!`;
-            renderCalendar();
-        }
-
-        function deleteSavedLesson(lessonId) {
-            savedLessons = savedLessons.filter(l => l.id !== lessonId);
-            localStorage.setItem('everydray_savedLessons', JSON.stringify(savedLessons));
-            renderSavedLessons();
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            if (tabName === 'builder') {
-                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
-                document.getElementById('tabBuilder').classList.add('active');
-                activeAssignLessonTitle = null;
-            } else if (tabName === 'saved') {
-                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
-                document.getElementById('tabSaved').classList.add('active');
-                activeAssignLessonTitle = null;
-            } else {
-                document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
-                document.getElementById('tabCalendar').classList.add('active');
-                if(!activeAssignLessonTitle) {
-                    document.getElementById('calendarInstruction').innerText = "לחצי על תאריך בלוח כדי לשבץ אליו את השיעור הנוכחי.";
-                }
-                renderCalendar();
-            }
-        }
-
-        function renderCalendar() {
-            const gridEl = document.getElementById('calendarGrid');
-            gridEl.innerHTML = '';
-
-            const daysOfWeek = ['א\'', 'ב\'', 'ג\'', 'ד\'', 'ה\'', 'ו\'', 'ש\''];
-            daysOfWeek.forEach(day => {
-                gridEl.innerHTML += `<div class="cal-head">${day}</div>`;
-            });
-
-            for (let i = 1; i <= 30; i++) {
-                let cellClass = "cal-cell";
-                if(activeAssignLessonTitle) {
-                    cellClass += " highlight-target";
-                }
-
-                let cellContent = `<span class="day-num">${i}</span>`;
-                if (calendarData[i]) {
-                    cellContent += `
-                        <div class="assigned-badge">${calendarData[i]}</div>
-                        <button class="remove-cal" onclick="event.stopPropagation(); removeLessonFromDay(${i})">הסר</button>
-                    `;
-                }
-                gridEl.innerHTML += `
-                    <div class="${cellClass}" onclick="assignLessonToDay(${i})">
-                        ${cellContent}
-                    </div>
-                `;
-            }
-        }
-
-        function assignLessonToDay(dayNum) {
-            let titleToAssign = activeAssignLessonTitle;
-            
-            if(!titleToAssign) {
-                if (myLesson.length === 0) {
-                    alert("הוסיפי לפחות תרגיל אחד לשיעור או בחרי שיעור שמור מהארכיון לפני שאת משבצת אותו בלוח השנה!");
-                    return;
-                }
-                titleToAssign = document.getElementById('lessonTitle').value;
-            }
-
-            calendarData[dayNum] = titleToAssign;
-            
-            // שמירת לוח השנה בזיכרון המקומי
-            localStorage.setItem('everydray_calendarData', JSON.stringify(calendarData));
-
-            activeAssignLessonTitle = null;
-            document.getElementById('calendarInstruction').innerText = "לחצי על תאריך בלוח כדי לשבץ אליו את השיעור הנוכחי.";
-            renderCalendar();
-            alert(`השיעור "${titleToAssign}" שובץ בהצלחה ליום ה-${dayNum} בנובמבר 2026! 🌸`);
-        }
-
-        function removeLessonFromDay(dayNum) {
-            delete calendarData[dayNum];
-            localStorage.setItem('everydray_calendarData', JSON.stringify(calendarData));
-            renderCalendar();
-        }
-
-        // טעינה ראשונית של הממשק והנתונים השמורים
-        renderExercises(allExercises);
-        renderLesson();
-        renderSavedLessons();
-        renderCalendar();
-    </script>
 </body>
 </html>
