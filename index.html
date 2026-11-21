@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>EVERYDRAY - פלטפורמת פילאטיס בוטיק</title>
-    <meta name="description" content="פלטפורמה למדריכות פילאטיס: בניית שיעור מאפס ממאגר תרגילים, שמירת שיעורים ושיבוץ בלוח שנה מסודר.">
-    <meta name="theme-color" content="#FAF6F5">
+    <meta name="description" content="פלטפורמה למדריכות פילאטיס: בניית שיעור מאפס ממאגר של מעל 120 תרגילים, סידור השיעור מההתחלה ועד הסוף, ושיבוץ בלוח שנה מסודר.">
+    <meta name="theme-color" content="#FBF7F5">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌸%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2">
-    <script src="exercises.js?v=2" defer></script>
-    <script src="app.js?v=2" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3">
+    <script src="exercises.js?v=3" defer></script>
+    <script src="app.js?v=3" defer></script>
 </head>
 <body data-view="builder">
 
@@ -33,6 +33,14 @@
 
         <!-- ===================== בניית שיעור ===================== -->
         <section class="view active" id="view-builder" aria-label="בניית שיעור">
+            <div class="hero">
+                <div class="hero-text">
+                    <p class="hero-eyebrow" id="heroGreeting">שלום 🌸</p>
+                    <h1 class="hero-title">בואי נבנה את <em>השיעור הבא</em> שלך</h1>
+                </div>
+                <div class="hero-stats" id="heroStats"></div>
+            </div>
+
             <div class="pane-switch" role="tablist" aria-label="מאגר או שיעור">
                 <button class="active" data-action="pane" data-pane="library" role="tab">מאגר התרגילים</button>
                 <button data-action="pane" data-pane="lesson" role="tab">השיעור שלי <span class="pane-badge" id="paneBadge">0</span></button>
@@ -44,13 +52,17 @@
                 <section class="card library" aria-label="מאגר התרגילים">
                     <div class="card-head">
                         <div>
-                            <h2>מאגר התרגילים</h2>
-                            <p class="muted small" id="libraryCount"></p>
+                            <h2 class="card-title">מאגר התרגילים</h2>
+                            <p class="card-sub" id="libraryCount"></p>
                         </div>
-                        <button class="btn sm outline" data-action="new-custom" data-icon="plus">תרגיל משלי</button>
+                        <button class="btn sm soft" data-action="new-custom" data-icon="plus">תרגיל משלי</button>
                     </div>
-                    <div class="search-box" data-icon="search">
-                        <input type="search" id="searchInput" class="input" placeholder="חיפוש לפי שם, מטרה, שרירים, קפיצים או אביזרים…" autocomplete="off" aria-label="חיפוש תרגילים">
+                    <div class="filters">
+                        <div class="search-box" data-icon="search">
+                            <input type="search" id="searchInput" class="input" placeholder="חיפוש לפי שם, מטרה, שרירים או ציוד…" autocomplete="off" aria-label="חיפוש תרגילים">
+                        </div>
+                        <select id="levelFilter" class="input" aria-label="סינון לפי רמה"></select>
+                        <select id="focusFilter" class="input" aria-label="סינון לפי אזור בגוף"></select>
                     </div>
                     <div class="chips" id="categoryChips" role="toolbar" aria-label="סינון לפי קטגוריה"></div>
                     <div class="ex-list" id="exerciseList"></div>
@@ -61,16 +73,18 @@
                     <div class="lp-head">
                         <div class="lp-status-row">
                             <div class="lp-status" id="lessonStatus"></div>
-                            <button class="link-btn" data-action="new-lesson" data-icon="plus">שיעור חדש</button>
+                            <div class="lp-links">
+                                <button class="link-btn" data-action="toggle-notes" id="notesToggle" data-icon="pen">פוקוס והערות</button>
+                                <button class="link-btn" data-action="new-lesson" data-icon="plus">שיעור חדש</button>
+                            </div>
                         </div>
                         <input id="lessonTitle" class="lesson-title-input" maxlength="80" placeholder="שם השיעור" aria-label="שם השיעור">
                         <div class="meta-row">
-                            <label class="mini-field"><span>רמה</span><select id="lessonLevel" class="input sm"></select></label>
-                            <label class="mini-field"><span>סוג שיעור</span><select id="lessonType" class="input sm"></select></label>
-                            <label class="mini-field"><span>משך יעד</span><select id="lessonTarget" class="input sm"></select></label>
+                            <label class="select-pill"><span>רמה</span><select id="lessonLevel"></select></label>
+                            <label class="select-pill"><span>סוג</span><select id="lessonType"></select></label>
+                            <label class="select-pill"><span>משך</span><select id="lessonTarget"></select></label>
                         </div>
-                        <button class="link-btn" data-action="toggle-notes" id="notesToggle">+ פוקוס והערות לשיעור</button>
-                        <textarea id="lessonNotes" class="input" rows="2" maxlength="400" placeholder="למשל: דגש על ישבן ואגן, עבודה עם כדור קטן…" hidden></textarea>
+                        <textarea id="lessonNotes" class="input" rows="2" maxlength="400" placeholder="פוקוס השיעור, למשל: דגש על ישבן ואגן, עבודה עם כדור קטן…" hidden></textarea>
                     </div>
 
                     <div class="lp-stats" id="lessonStats"></div>
@@ -92,13 +106,16 @@
                     </div>
 
                     <div class="lp-body" id="lessonDrop">
-                        <ol class="lesson-items" id="lessonItems"></ol>
                         <div class="empty-lesson" id="emptyLesson">
                             <div class="empty-flower">🌸</div>
-                            <p class="empty-title">השיעור שלך עדיין ריק</p>
-                            <p class="muted">לחצי על <b>+</b> ליד תרגיל במאגר (או גררי אותו לכאן),<br>או תני למערכת להרכיב לך טיוטה ראשונה לפי סוג וזמן השיעור.</p>
-                            <button class="btn gold" data-action="open-draft" data-icon="sparkle">טיוטה אוטומטית</button>
+                            <div>
+                                <p class="empty-title">בואי נתחיל מאפס</p>
+                                <p class="muted">לחצי על <b>+</b> ליד תרגיל במאגר, והוא ייכנס לחלק המתאים בשיעור. אפשר גם להתחיל מטיוטה מוכנה.</p>
+                            </div>
+                            <button class="btn sm gold" data-action="open-draft" data-icon="sparkle">טיוטה אוטומטית</button>
                         </div>
+                        <p class="sort-hint" id="sortHint" hidden></p>
+                        <div class="phases" id="lessonItems"></div>
                     </div>
 
                     <div class="lp-checks" id="lessonChecks"></div>
@@ -111,6 +128,7 @@
         <section class="view" id="view-lessons" aria-label="השיעורים שלי">
             <div class="page-head">
                 <div>
+                    <p class="page-eyebrow">הספרייה שלך</p>
                     <h1>השיעורים שלי</h1>
                     <p class="muted">כל השיעורים ששמרת — לצפייה, עריכה, הדפסה ושיבוץ בלוח השנה.</p>
                 </div>
@@ -118,7 +136,7 @@
             </div>
             <div class="lessons-toolbar">
                 <div class="search-box" data-icon="search">
-                    <input type="search" id="lessonsSearch" class="input" placeholder="חיפוש שיעור…" autocomplete="off" aria-label="חיפוש שיעור">
+                    <input type="search" id="lessonsSearch" class="input" placeholder="חיפוש שיעור או תרגיל…" autocomplete="off" aria-label="חיפוש שיעור">
                 </div>
                 <select id="lessonsSort" class="input" aria-label="מיון">
                     <option value="updated">עודכנו לאחרונה</option>
@@ -144,6 +162,12 @@
 
         <!-- ===================== לוח שנה ===================== -->
         <section class="view" id="view-calendar" aria-label="לוח שנה">
+            <div class="page-head">
+                <div>
+                    <p class="page-eyebrow">התכנון שלך</p>
+                    <h1>לוח השיעורים</h1>
+                </div>
+            </div>
             <div class="cal-layout">
                 <section class="card cal-main">
                     <div class="cal-toolbar">
@@ -158,7 +182,7 @@
                             <button data-action="cal-mode" data-mode="week">שבוע</button>
                         </div>
                         <span class="spacer"></span>
-                        <button class="btn sm outline" data-action="export-ics" data-icon="download" title="הורדת קובץ ‎.ics‎ לייבוא ל-Google Calendar / יומן אייפון">ייצוא ליומן</button>
+                        <button class="btn sm soft" data-action="export-ics" data-icon="download" title="הורדת קובץ ‎.ics‎ לייבוא ל-Google Calendar / יומן אייפון">ייצוא ליומן</button>
                     </div>
                     <p class="cal-stats" id="calStats"></p>
                     <div id="calBody"></div>

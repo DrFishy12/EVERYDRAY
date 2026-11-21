@@ -9,16 +9,39 @@ const STORAGE_KEY = 'everydray_v2';
 const LEGACY_LESSONS_KEY = 'everydray_savedLessons';
 const LEGACY_CALENDAR_KEY = 'everydray_calendarData';
 
-const CAT = {
-    'תרגילי חימום': { key: 'warm', label: 'חימום' },
-    'פילאטיס מזרן': { key: 'mat', label: 'מזרן' },
-    'פילאטיס מכשיר': { key: 'reformer', label: 'מכשיר' },
-    'תרגילי מתיחות': { key: 'stretch', label: 'מתיחות' },
-    'התאוששות': { key: 'rest', label: 'מנוחה' }
-};
-const CATEGORY_LIST = ['תרגילי חימום', 'פילאטיס מזרן', 'פילאטיס מכשיר', 'תרגילי מתיחות'];
+const CATEGORIES = [
+    { name: 'תרגילי חימום', key: 'warm', label: 'חימום', icon: 'sun' },
+    { name: 'פילאטיס מזרן', key: 'mat', label: 'מזרן', icon: 'mat' },
+    { name: 'פילאטיס מכשיר', key: 'reformer', label: 'רפורמר', icon: 'reformer' },
+    { name: 'פילאטיס עם אביזרים', key: 'props', label: 'אביזרים', icon: 'ball' },
+    { name: 'פילאטיס מכשירים נוספים', key: 'apparatus', label: 'צ׳ר וקדילאק', icon: 'chair' },
+    { name: 'תרגילי מתיחות', key: 'stretch', label: 'מתיחות', icon: 'leaf' }
+];
 const REST_CATEGORY = 'התאוששות';
+const CATEGORY_NAMES = CATEGORIES.map(c => c.name);
+const CAT_BY_NAME = {};
+CATEGORIES.forEach(c => { CAT_BY_NAME[c.name] = c; });
+CAT_BY_NAME[REST_CATEGORY] = { name: REST_CATEGORY, key: 'rest', label: 'מנוחה', icon: 'moon' };
+const catInfo = c => CAT_BY_NAME[c] || CAT_BY_NAME['פילאטיס מזרן'];
+const catKey = c => catInfo(c).key;
+const catLabel = c => (CAT_BY_NAME[c] ? CAT_BY_NAME[c].label : (c || ''));
+const CAT_KEY_ORDER = ['warm', 'mat', 'reformer', 'props', 'apparatus', 'stretch', 'rest'];
+const CAT_KEY_LABEL = { warm: 'חימום', mat: 'מזרן', reformer: 'רפורמר', props: 'אביזרים', apparatus: 'צ׳ר וקדילאק', stretch: 'מתיחות', rest: 'מנוחה' };
+
 const LEVELS = ['כל הרמות', 'מתחילות', 'בינוניות', 'מתקדמות'];
+const EX_LEVELS = ['מתחילות', 'בינוניות', 'מתקדמות'];
+const levelRank = l => ({ 'מתחילות': 1, 'בינוניות': 2, 'מתקדמות': 3 }[l] || 1);
+const FOCUS_AREAS = ['ליבה ובטן', 'ישבן ורגליים', 'גב ויציבה', 'ידיים וכתפיים', 'גמישות וניידות', 'שיווי משקל', 'נשימה והרפיה'];
+
+const PHASES = [
+    { key: 'open', label: 'פתיחה וחימום', short: 'פתיחה', hint: 'נשימה, ניידות והכנת הגוף', icon: 'sun', empty: 'כאן נכנסים תרגילי החימום — לחצי + במאגר או גררי לכאן' },
+    { key: 'main', label: 'החלק המרכזי', short: 'מרכזי', hint: 'מזרן, רפורמר ואביזרים', icon: 'lotus', empty: 'כאן נכנס לב השיעור — מזרן, רפורמר, אביזרים' },
+    { key: 'close', label: 'סיום ושחרור', short: 'סיום', hint: 'מתיחות, שחרור ונשימה', icon: 'moon', empty: 'כאן נכנסות המתיחות וההרפיה לסיום השיעור' }
+];
+const PHASE_KEYS = PHASES.map(p => p.key);
+const phaseRank = p => { const i = PHASE_KEYS.indexOf(p); return i < 0 ? 1 : i; };
+const defaultPhase = cat => (cat === 'תרגילי חימום' ? 'open' : cat === 'תרגילי מתיחות' ? 'close' : 'main');
+
 const LESSON_TYPES = { mixed: 'משולב', mat: 'מזרן', reformer: 'רפורמר' };
 const TARGETS = [30, 40, 45, 50, 55, 60, 75, 90];
 const MONTHS = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
@@ -48,9 +71,20 @@ const ICONS = {
     circle: '<circle cx="12" cy="12" r="7.5"/>',
     download: '<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>',
     upload: '<path d="M12 20V9M7 13.5l5-5 5 5M5 4h14"/>',
-    grip: '<circle cx="9" cy="6" r="1.2"/><circle cx="15" cy="6" r="1.2"/><circle cx="9" cy="12" r="1.2"/><circle cx="15" cy="12" r="1.2"/><circle cx="9" cy="18" r="1.2"/><circle cx="15" cy="18" r="1.2"/>',
+    grip: '<g fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></g>',
     repeat: '<path d="M17 2.5l3 3-3 3"/><path d="M4 11.5v-1a5 5 0 0 1 5-5h11"/><path d="M7 21.5l-3-3 3-3"/><path d="M20 12.5v1a5 5 0 0 1-5 5H4"/>',
-    link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'
+    link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    more: '<g fill="currentColor" stroke="none"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></g>',
+    swap: '<path d="M4 8h13l-3.5-3.5"/><path d="M20 16H7l3.5 3.5"/>',
+    clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    sun: '<circle cx="12" cy="12" r="3.6"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"/>',
+    mat: '<circle cx="6.5" cy="9" r="2.2"/><path d="M9.2 10.8l4.3 1.4 3.8-3.9"/><path d="M3 15.5h18"/><path d="M5 18.8h14" opacity=".45"/>',
+    reformer: '<path d="M3 16h18"/><path d="M5 16v3.5M19 16v3.5"/><rect x="7.5" y="12" width="6.5" height="4" rx="1.2"/><path d="M18 16V9"/><path d="M16.3 9h3.4"/>',
+    ball: '<circle cx="12" cy="12" r="8"/><path d="M4.8 9c4.5 2 9.9 2 14.4 0M4.8 15c4.5-2 9.9-2 14.4 0"/>',
+    chair: '<path d="M7 3.5v17"/><path d="M7 11h9.5a1.5 1.5 0 0 1 1.5 1.5v8"/><path d="M5 20.5h4M16 20.5h4"/><path d="M10.5 15h7.5"/>',
+    leaf: '<path d="M5 19C5 10.5 10 5 19 5c0 9-5.5 14-14 14z"/><path d="M5 19l7.5-7.5"/>',
+    moon: '<path d="M19.5 14.5A7.5 7.5 0 0 1 9.5 4.5a7.5 7.5 0 1 0 10 10z"/>',
+    lotus: '<circle cx="12" cy="12" r="2.3"/><path d="M12 9.7C10.1 7.5 10.2 4.8 12 3c1.8 1.8 1.9 4.5 0 6.7zM14.3 12c2.2-1.9 4.9-1.8 6.7 0-1.8 1.8-4.5 1.9-6.7 0zM12 14.3c1.9 2.2 1.8 4.9 0 6.7-1.8-1.8-1.9-4.5 0-6.7zM9.7 12C7.5 13.9 4.8 13.8 3 12c1.8-1.8 4.5-1.9 6.7 0z"/>'
 };
 function icon(name, size = 18) {
     return `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
@@ -64,9 +98,9 @@ const uid = prefix => `${prefix}_${Date.now().toString(36)}_${Math.random().toSt
 const clone = obj => JSON.parse(JSON.stringify(obj));
 const sumDur = items => items.reduce((s, it) => s + (Number(it.duration) || 0), 0);
 const clampDur = n => Math.min(60, Math.max(1, Math.round(Number(n) || 1)));
-const catKey = c => (CAT[c] ? CAT[c].key : 'mat');
-const catLabel = c => (CAT[c] ? CAT[c].label : (c || ''));
 const isReformer = x => /רפורמר/.test((x && x.equipment) || '');
+const isMachine = x => /רפורמר|צ׳ר|צ'ר|קדילאק|טאואר|בארל|קורקטור/.test((x && x.equipment) || '');
+const needsProps = x => !!(x && x.equipment) && !/^ללא/.test(x.equipment) && !isMachine(x);
 const isCompact = () => window.matchMedia('(max-width: 1024px)').matches;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_RE = /^\d{2}:\d{2}$/;
@@ -83,6 +117,16 @@ function shuffle(arr) {
     }
     return a;
 }
+/* "המאה (The Hundred)" -> { he: "המאה", en: "The Hundred" } */
+function splitName(name) {
+    const m = /^(.*?)\s*\(([^()]*[A-Za-z][^()]*)\)\s*$/.exec(String(name || ''));
+    return m ? { he: m[1].trim(), en: m[2].trim() } : { he: String(name || ''), en: '' };
+}
+function nameHtml(name) {
+    const n = splitName(name);
+    return `<span class="nm-he">${esc(n.he)}</span>${n.en ? `<span class="nm-en">${esc(n.en)}</span>` : ''}`;
+}
+const levelDots = level => `<span class="lvl lvl-${levelRank(level)}" title="${esc(level || '')}" aria-label="רמה: ${esc(level || '')}"><i></i><i></i><i></i></span>`;
 
 /* ---------- תאריכים ---------- */
 const toDateStr = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -121,7 +165,7 @@ function relativeDay(s) {
    נתונים ושמירה
    ========================================================= */
 function defaultState() {
-    return { version: 2, lessons: [], events: [], customExercises: [], favorites: [], draft: null, prefs: { view: 'builder', calMode: 'month', lastTime: '18:00', lastGroup: '' } };
+    return { version: 3, lessons: [], events: [], customExercises: [], favorites: [], draft: null, prefs: { view: 'builder', calMode: 'month', lastTime: '18:00', lastGroup: '' } };
 }
 
 function normalizeItem(it) {
@@ -131,6 +175,7 @@ function normalizeItem(it) {
         duration: clampDur(it.duration),
         note: String(it.note || '')
     };
+    if (PHASE_KEYS.includes(it.phase)) base.phase = it.phase;
     if (it.kind === 'rest' || it.type === 'rest') {
         return Object.assign(base, { kind: 'rest', name: 'הפסקת מנוחה', category: REST_CATEGORY });
     }
@@ -147,6 +192,26 @@ function normalizeItem(it) {
         tips: String(it.tips || ''),
         muscles: String(it.muscles || '')
     });
+}
+
+/* כל פריט בשיעור שייך לאחד משלושת חלקי השיעור, והסדר תמיד: פתיחה → מרכזי → סיום */
+function normalizePhases(items) {
+    if (items.length && items.every(it => PHASE_KEYS.includes(it.phase))) {
+        return items.map((it, i) => [it, i])
+            .sort((a, b) => phaseRank(a[0].phase) - phaseRank(b[0].phase) || a[1] - b[1])
+            .map(x => x[0]);
+    }
+    // שיעורים מהגרסה הקודמת – מסיקים את החלקים לפי הסדר והקטגוריות, בלי לשנות את הסדר
+    const isEx = it => it.kind !== 'rest';
+    const firstNonOpen = items.findIndex(it => isEx(it) && defaultPhase(it.category) !== 'open');
+    let lastNonClose = -1;
+    items.forEach((it, i) => { if (isEx(it) && defaultPhase(it.category) !== 'close') lastNonClose = i; });
+    items.forEach((it, i) => {
+        if (firstNonOpen === -1 || i < firstNonOpen) it.phase = 'open';
+        else if (lastNonClose === -1 || i > lastNonClose) it.phase = 'close';
+        else it.phase = 'main';
+    });
+    return items;
 }
 
 function inferType(items) {
@@ -168,7 +233,7 @@ function idTime(id) {
 
 function normalizeLesson(l) {
     if (!l || typeof l !== 'object' || !Array.isArray(l.items)) return null;
-    const items = l.items.map(normalizeItem).filter(Boolean);
+    const items = normalizePhases(l.items.map(normalizeItem).filter(Boolean));
     const created = Number(l.createdAt) || idTime(l.id) || Date.now();
     return {
         id: String(l.id || uid('lesson')),
@@ -202,7 +267,9 @@ function normalizeCustom(e) {
         id: String(e.id || uid('c')),
         custom: true,
         name: String(e.name),
-        category: CATEGORY_LIST.includes(e.category) ? e.category : 'פילאטיס מזרן',
+        category: CATEGORY_NAMES.includes(e.category) ? e.category : 'פילאטיס מזרן',
+        level: EX_LEVELS.includes(e.level) ? e.level : 'מתחילות',
+        focus: Array.isArray(e.focus) ? e.focus.filter(f => FOCUS_AREAS.includes(f)) : [],
         target: String(e.target || ''),
         duration: clampDur(e.duration || 4),
         description: String(e.description || ''),
@@ -226,7 +293,7 @@ function normalizeState(s) {
     return out;
 }
 
-/* המרה מהגרסה הקודמת של האתר (שיעורים + לוח של נובמבר 2026) */
+/* המרה מהגרסה הראשונה של האתר (שיעורים + לוח של נובמבר 2026) */
 function migrateLegacy() {
     let oldLessons = [];
     let oldCal = {};
@@ -281,7 +348,7 @@ function normalizeBuilder(d) {
     b.type = LESSON_TYPES[d.type] ? d.type : 'mixed';
     b.target = Number(d.target) > 0 ? Number(d.target) : 50;
     b.notes = String(d.notes || '');
-    b.items = Array.isArray(d.items) ? d.items.map(normalizeItem).filter(Boolean) : [];
+    b.items = Array.isArray(d.items) ? normalizePhases(d.items.map(normalizeItem).filter(Boolean)) : [];
     b.dirty = !!d.dirty;
     return b;
 }
@@ -294,8 +361,10 @@ const ui = {
     pane: 'library',
     search: '',
     cat: 'all',
+    level: 'all',
+    focus: 'all',
     expanded: new Set(),
-    openNotes: new Set(),
+    openMore: new Set(),
     calMode: state.prefs.calMode === 'week' ? 'week' : 'month',
     selectedDate: todayStr(),
     calCursor: monthStart(todayStr()),
@@ -311,19 +380,21 @@ const libraryAll = () => EXERCISES.concat(state.customExercises);
 const findExercise = id => (id == null ? null : libraryAll().find(e => String(e.id) === String(id)));
 const isFav = id => state.favorites.includes(String(id));
 function exerciseOrder(ex) {
-    return typeof ex.id === 'number' ? ex.id : 1000 + state.customExercises.indexOf(ex);
+    const i = EXERCISES.indexOf(ex);
+    return i >= 0 ? i : 10000 + state.customExercises.indexOf(ex);
 }
 
 function renderChips() {
+    const all = libraryAll();
     const chips = [
-        { cat: 'all', label: 'הכל' },
-        ...CATEGORY_LIST.map(c => ({ cat: c, label: catLabel(c), key: catKey(c) })),
-        { cat: 'fav', label: '★ מועדפים' },
-        { cat: 'mine', label: 'התרגילים שלי' }
+        { cat: 'all', label: 'הכל', count: all.length },
+        ...CATEGORIES.map(c => ({ cat: c.name, label: c.label, key: c.key, icon: c.icon, count: all.filter(e => e.category === c.name).length })),
+        { cat: 'fav', label: '★ מועדפים', count: state.favorites.length },
+        { cat: 'mine', label: 'התרגילים שלי', count: state.customExercises.length }
     ];
     $('#categoryChips').innerHTML = chips.map(c => `
-        <button class="chip ${c.key ? 'cat-' + c.key : ''} ${ui.cat === c.cat ? 'active' : ''}" data-action="filter-cat" data-cat="${esc(c.cat)}" aria-pressed="${ui.cat === c.cat}">
-            ${c.key ? '<span class="dot"></span>' : ''}${esc(c.label)}
+        <button class="chip ${c.key ? 'cat-' + c.key : 'plain'} ${ui.cat === c.cat ? 'active' : ''}" data-action="filter-cat" data-cat="${esc(c.cat)}" aria-pressed="${ui.cat === c.cat}">
+            ${c.icon ? `<span class="chip-ico">${icon(c.icon, 13)}</span>` : ''}${esc(c.label)}${c.count ? ` <span class="count">${c.count}</span>` : ''}
         </button>`).join('');
 }
 
@@ -332,25 +403,74 @@ function filteredLibrary() {
     return libraryAll().filter(ex => {
         if (ui.cat === 'fav' && !isFav(ex.id)) return false;
         if (ui.cat === 'mine' && !ex.custom) return false;
-        if (CATEGORY_LIST.includes(ui.cat) && ex.category !== ui.cat) return false;
+        if (CATEGORY_NAMES.includes(ui.cat) && ex.category !== ui.cat) return false;
+        if (ui.level !== 'all' && ex.level !== ui.level) return false;
+        if (ui.focus !== 'all' && !(ex.focus || []).includes(ui.focus)) return false;
         if (!q) return true;
-        return [ex.name, ex.target, ex.description, ex.tips, ex.muscles, ex.springs, ex.equipment, ex.category]
+        return [ex.name, ex.target, ex.description, ex.tips, ex.muscles, ex.springs, ex.equipment, ex.category, ex.level, (ex.focus || []).join(' ')]
             .some(f => String(f || '').toLowerCase().includes(q));
     });
+}
+
+function exerciseCardHtml(ex, counts) {
+    const id = String(ex.id);
+    const info = catInfo(ex.category);
+    const open = ui.expanded.has(id);
+    const n = counts[id] || 0;
+    const fav = isFav(id);
+    const nm = splitName(ex.name);
+    return `
+    <article class="ex-card cat-${info.key} ${open ? 'open' : ''}" draggable="true" data-ex-id="${esc(id)}">
+        <div class="ex-row">
+            <span class="cat-bubble" aria-hidden="true">${icon(info.icon, 20)}</span>
+            <button class="ex-title" data-action="toggle-ex" data-id="${esc(id)}" aria-expanded="${open}">
+                <span class="ex-name"><span class="nm-he">${esc(nm.he)}</span>${nm.en ? `<span class="nm-en">${esc(nm.en)}</span>` : ''}</span>
+                <span class="ex-sub">
+                    ${levelDots(ex.level)}
+                    <span class="sub-dur">${ex.duration} ד׳ ·</span>
+                    <span>${esc(ex.target)}</span>
+                    ${ex.custom ? '<span class="tag" style="--cat-bg:var(--gold-soft);--cat-color:var(--gold-dark)">שלי</span>' : ''}
+                </span>
+            </button>
+            <div class="ex-side">
+                ${n ? `<span class="in-lesson" title="כבר בשיעור">${icon('check', 12)}<span class="in-lesson-text">${n > 1 ? '×' + n : 'בשיעור'}</span></span>` : ''}
+                <span class="dur-pill">${ex.duration} ד׳</span>
+                <button class="icon-btn sm fav-btn ${fav ? 'on' : ''}" data-action="fav" data-id="${esc(id)}" aria-pressed="${fav}" aria-label="${fav ? 'הסרה מהמועדפים' : 'הוספה למועדפים'}" title="${fav ? 'הסרה מהמועדפים' : 'הוספה למועדפים'}">${icon('star')}</button>
+                <button class="add-btn" data-action="add-ex" data-id="${esc(id)}" aria-label="הוספת ${esc(nm.he)} לשיעור" title="הוספה לשיעור">${icon('plus', 18)}</button>
+            </div>
+        </div>
+        <div class="ex-details">
+            ${ex.description ? `<p class="ex-desc">${esc(ex.description)}</p>` : ''}
+            ${ex.tips ? `<p class="ex-tips">${esc(ex.tips)}</p>` : ''}
+            ${ex.muscles ? `<p class="ex-muscles"><b>שרירים עובדים:</b> ${esc(ex.muscles)}</p>` : ''}
+            <div class="ex-meta">
+                <span class="pill tag">${esc(catLabel(ex.category))}</span>
+                <span class="pill">${esc(ex.level || '')}</span>
+                ${ex.springs && !/ללא/.test(ex.springs) ? `<span class="pill springs">קפיצים: ${esc(ex.springs)}</span>` : ''}
+                ${ex.equipment ? `<span class="pill">${esc(ex.equipment)}</span>` : ''}
+                ${(ex.focus || []).map(f => `<span class="pill rose">${esc(f)}</span>`).join('')}
+                ${safeUrl(ex.videoUrl) ? `<a href="${esc(safeUrl(ex.videoUrl))}" target="_blank" rel="noopener">צפייה בסרטון הסבר 📺</a>` : ''}
+            </div>
+            ${ex.custom ? `<div class="ex-own-actions">
+                <button class="btn xs" data-action="edit-custom" data-id="${esc(id)}">${icon('pen')}עריכה</button>
+                <button class="btn xs ghost" data-action="delete-custom" data-id="${esc(id)}">${icon('trash')}מחיקה</button>
+            </div>` : ''}
+        </div>
+    </article>`;
 }
 
 function renderLibrary() {
     renderChips();
     const list = filteredLibrary();
     const total = libraryAll().length;
-    $('#libraryCount').textContent = list.length === total ? `${total} תרגילים במאגר` : `מוצגים ${list.length} מתוך ${total} תרגילים`;
+    $('#libraryCount').textContent = list.length === total ? `${total} תרגילים · לחצי על תרגיל להסבר מלא` : `מוצגים ${list.length} מתוך ${total} תרגילים`;
 
     const counts = {};
     builder.items.forEach(it => { if (it.exId) counts[it.exId] = (counts[it.exId] || 0) + 1; });
 
     const el = $('#exerciseList');
     if (!list.length) {
-        let msg = 'לא נמצאו תרגילים מתאימים לחיפוש.';
+        let msg = 'לא נמצאו תרגילים מתאימים. נסי לשנות את החיפוש או את הסינון.';
         let extra = '';
         if (ui.cat === 'fav' && !ui.search) msg = 'עוד לא סימנת מועדפים. לחצי על ☆ ליד תרגיל כדי לשמור אותו כאן לגישה מהירה.';
         if (ui.cat === 'mine' && !ui.search) {
@@ -360,43 +480,7 @@ function renderLibrary() {
         el.innerHTML = `<div class="lib-empty"><p>${msg}</p>${extra}</div>`;
         return;
     }
-
-    el.innerHTML = list.map(ex => {
-        const id = String(ex.id);
-        const key = catKey(ex.category);
-        const open = ui.expanded.has(id);
-        const n = counts[id] || 0;
-        const fav = isFav(id);
-        return `
-        <article class="ex-card cat-${key} ${open ? 'open' : ''}" draggable="true" data-ex-id="${esc(id)}">
-            <div class="ex-row">
-                <button class="ex-title" data-action="toggle-ex" data-id="${esc(id)}" aria-expanded="${open}">
-                    <h4>${esc(ex.name)}</h4>
-                    <div class="ex-sub"><span class="tag">${esc(catLabel(ex.category))}</span>${ex.custom ? '<span class="tag" style="--cat-bg:var(--accent-light);--cat-color:var(--accent-dark)">שלי</span>' : ''}<span>${esc(ex.target)}</span></div>
-                </button>
-                <div class="ex-side">
-                    ${n ? `<span class="in-lesson">${n > 1 ? '×' + n + ' ' : ''}בשיעור</span>` : ''}
-                    <span class="ex-dur">${ex.duration} ד׳</span>
-                    <button class="icon-btn sm fav-btn ${fav ? 'on' : ''}" data-action="fav" data-id="${esc(id)}" aria-pressed="${fav}" aria-label="${fav ? 'הסרה מהמועדפים' : 'הוספה למועדפים'}" title="${fav ? 'הסרה מהמועדפים' : 'הוספה למועדפים'}">${icon('star')}</button>
-                    <button class="add-btn" data-action="add-ex" data-id="${esc(id)}" aria-label="הוספת ${esc(ex.name)} לשיעור" title="הוספה לשיעור">${icon('plus')}</button>
-                </div>
-            </div>
-            <div class="ex-details">
-                ${ex.description ? `<p class="ex-desc">${esc(ex.description)}</p>` : ''}
-                ${ex.tips ? `<p class="ex-tips">${esc(ex.tips)}</p>` : ''}
-                ${ex.muscles ? `<p class="ex-muscles"><b>שרירים עובדים:</b> ${esc(ex.muscles)}</p>` : ''}
-                <div class="ex-meta">
-                    <span class="ex-springs">קפיצים: ${esc(ex.springs || '—')}</span>
-                    <span class="ex-equipment">אביזרים: ${esc(ex.equipment || '—')}</span>
-                    ${safeUrl(ex.videoUrl) ? `<a href="${esc(safeUrl(ex.videoUrl))}" target="_blank" rel="noopener">צפייה בסרטון הסבר 📺</a>` : ''}
-                </div>
-                ${ex.custom ? `<div class="ex-own-actions">
-                    <button class="btn sm" data-action="edit-custom" data-id="${esc(id)}">${icon('pen')}עריכה</button>
-                    <button class="btn sm ghost" data-action="delete-custom" data-id="${esc(id)}">${icon('trash')}מחיקה</button>
-                </div>` : ''}
-            </div>
-        </article>`;
-    }).join('');
+    el.innerHTML = list.map(ex => exerciseCardHtml(ex, counts)).join('');
 }
 
 function toggleFav(id) {
@@ -416,29 +500,33 @@ function flashLibraryCard(id) {
 }
 
 /* ---------- תרגילים משלי ---------- */
-function uniqueValues(field) {
-    return [...new Set(libraryAll().map(e => e[field]).filter(Boolean))];
-}
+const uniqueValues = field => [...new Set(libraryAll().map(e => e[field]).filter(Boolean))];
 
 function openCustomExerciseModal(id = null) {
     const ex = id ? state.customExercises.find(e => e.id === id) : null;
-    const v = ex || { name: '', category: 'פילאטיס מזרן', target: '', duration: 4, springs: 'ללא קפיצים', equipment: 'ללא אביזרים (מזרן)', description: '', tips: '', muscles: '', videoUrl: '' };
+    const v = ex || { name: '', category: 'פילאטיס מזרן', level: 'מתחילות', focus: [], target: '', duration: 4, springs: 'ללא קפיצים', equipment: 'ללא אביזרים (מזרן)', description: '', tips: '', muscles: '', videoUrl: '' };
     const body = `
         <label class="field"><span>שם התרגיל *</span><input class="input" id="cxName" maxlength="80" value="${esc(v.name)}" placeholder="למשל: גשר על כדור (Bridge on Ball)"></label>
         <div class="form-row">
-            <label class="field"><span>קטגוריה</span><select class="input" id="cxCat">${CATEGORY_LIST.map(c => `<option value="${esc(c)}" ${c === v.category ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></label>
-            <label class="field"><span>משך (דקות)</span><input class="input" id="cxDur" type="number" min="1" max="60" value="${esc(v.duration)}"></label>
+            <label class="field"><span>קטגוריה</span><select class="input" id="cxCat">${CATEGORIES.map(c => `<option value="${esc(c.name)}" ${c.name === v.category ? 'selected' : ''}>${esc(c.label)}</option>`).join('')}</select></label>
+            <label class="field"><span>רמה</span><select class="input" id="cxLevel">${EX_LEVELS.map(l => `<option ${l === v.level ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
         </div>
-        <label class="field"><span>מטרה</span><input class="input" id="cxTarget" maxlength="80" value="${esc(v.target)}" placeholder="למשל: ישבן ויציבות אגן"></label>
+        <div class="form-row">
+            <label class="field"><span>משך (דקות)</span><input class="input" id="cxDur" type="number" min="1" max="60" value="${esc(v.duration)}"></label>
+            <label class="field"><span>מטרה</span><input class="input" id="cxTarget" maxlength="80" value="${esc(v.target)}" placeholder="למשל: ישבן ויציבות אגן"></label>
+        </div>
+        <div class="field"><span>אזורי גוף</span>
+            <div class="toggle-chips" id="cxFocus">${FOCUS_AREAS.map(f => `<label><input type="checkbox" value="${esc(f)}" ${(v.focus || []).includes(f) ? 'checked' : ''}><span>${esc(f)}</span></label>`).join('')}</div>
+        </div>
         <div class="form-row">
             <label class="field"><span>קפיצים</span><input class="input" id="cxSprings" list="dlSprings" maxlength="60" value="${esc(v.springs)}"></label>
-            <label class="field"><span>אביזרים</span><input class="input" id="cxEquip" list="dlEquip" maxlength="80" value="${esc(v.equipment)}"></label>
+            <label class="field"><span>אביזרים / מכשיר</span><input class="input" id="cxEquip" list="dlEquip" maxlength="80" value="${esc(v.equipment)}"></label>
         </div>
         <datalist id="dlSprings">${uniqueValues('springs').map(s => `<option value="${esc(s)}">`).join('')}</datalist>
         <datalist id="dlEquip">${uniqueValues('equipment').map(s => `<option value="${esc(s)}">`).join('')}</datalist>
-        <label class="field"><span>הסבר ביצוע</span><textarea class="input" id="cxDesc" rows="3" maxlength="600">${esc(v.description)}</textarea></label>
+        <label class="field"><span>הסבר ביצוע</span><textarea class="input" id="cxDesc" rows="3" maxlength="700">${esc(v.description)}</textarea></label>
         <label class="field"><span>דגשים להדרכה <small>(לא חובה)</small></span><textarea class="input" id="cxTips" rows="2" maxlength="300">${esc(v.tips)}</textarea></label>
-        <label class="field"><span>שרירים עובדים <small>(לא חובה)</small></span><input class="input" id="cxMuscles" maxlength="120" value="${esc(v.muscles)}"></label>
+        <label class="field"><span>שרירים עובדים <small>(לא חובה)</small></span><input class="input" id="cxMuscles" maxlength="140" value="${esc(v.muscles)}"></label>
         <label class="field"><span>קישור לסרטון <small>(לא חובה)</small></span><input class="input" id="cxVideo" type="url" dir="ltr" maxlength="300" value="${esc(v.videoUrl)}" placeholder="https://…"></label>`;
 
     openModal({
@@ -454,8 +542,9 @@ function openCustomExerciseModal(id = null) {
                     if (video && !safeUrl(video)) { toast('הקישור לסרטון צריך להתחיל ב-https://', { type: 'warn' }); return false; }
                     const data = normalizeCustom({
                         id: ex ? ex.id : uid('c'),
-                        name, category: q('#cxCat').value, duration: q('#cxDur').value, target: q('#cxTarget').value.trim(),
-                        springs: q('#cxSprings').value.trim(), equipment: q('#cxEquip').value.trim(),
+                        name, category: q('#cxCat').value, level: q('#cxLevel').value, duration: q('#cxDur').value,
+                        focus: [...m.el.querySelectorAll('#cxFocus input:checked')].map(i => i.value),
+                        target: q('#cxTarget').value.trim(), springs: q('#cxSprings').value.trim(), equipment: q('#cxEquip').value.trim(),
                         description: q('#cxDesc').value.trim(), tips: q('#cxTips').value.trim(), muscles: q('#cxMuscles').value.trim(), videoUrl: video
                     });
                     if (ex) {
@@ -494,7 +583,8 @@ async function deleteCustomExercise(id) {
 function makeItemFromExercise(ex) {
     return normalizeItem({
         uid: uid('it'), kind: 'exercise', exId: String(ex.id), name: ex.name, category: ex.category, target: ex.target,
-        duration: ex.duration, springs: ex.springs, equipment: ex.equipment, description: ex.description, tips: ex.tips, muscles: ex.muscles
+        duration: ex.duration, springs: ex.springs, equipment: ex.equipment, description: ex.description, tips: ex.tips, muscles: ex.muscles,
+        phase: defaultPhase(ex.category)
     });
 }
 function itemInfo(it) {
@@ -504,6 +594,17 @@ function itemInfo(it) {
     return Object.assign({}, it, { description: ex.description || it.description, tips: ex.tips || it.tips, muscles: ex.muscles || it.muscles, videoUrl: ex.videoUrl });
 }
 const getItem = u => builder.items.find(it => it.uid === u);
+const itemIndex = u => builder.items.findIndex(it => it.uid === u);
+
+/* טווח האינדקסים [start, end) של חלק בשיעור */
+function phaseBounds(phase) {
+    const r = phaseRank(phase);
+    let start = builder.items.findIndex(it => phaseRank(it.phase) >= r);
+    if (start < 0) start = builder.items.length;
+    let end = builder.items.findIndex(it => phaseRank(it.phase) > r);
+    if (end < 0) end = builder.items.length;
+    return [start, end];
+}
 
 function commitBuilder({ dirty = true, library = true } = {}) {
     if (dirty) builder.dirty = true;
@@ -523,50 +624,73 @@ function syncBuilderInputs() {
     tSel.value = String(builder.target);
     $('#lessonNotes').value = builder.notes;
     $('#lessonNotes').hidden = !builder.notes;
-    $('#notesToggle').hidden = !!builder.notes;
 }
 
-function addExerciseToLesson(id, index = null) {
+function addExerciseToLesson(id, { phase = null, index = null } = {}) {
     const ex = findExercise(id);
     if (!ex) return;
     const item = makeItemFromExercise(ex);
-    if (index == null || index >= builder.items.length) builder.items.push(item);
-    else builder.items.splice(Math.max(0, index), 0, item);
+    if (phase) item.phase = phase;
+    const [s, e] = phaseBounds(item.phase);
+    const at = index == null ? e : Math.min(Math.max(index, s), e);
+    builder.items.splice(at, 0, item);
     ui.newItemUid = item.uid;
     commitBuilder();
     flashLibraryCard(id);
     if (isCompact() && ui.pane === 'library') {
         const badge = $('#paneBadge');
         badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
-        toast(`נוסף לשיעור: ${ex.name}`, { action: { label: 'לשיעור', fn: () => setPane('lesson') }, timeout: 2200, key: 'added' });
+        const ph = PHASES[phaseRank(item.phase)];
+        toast(`נוסף ל${ph.label}: ${splitName(ex.name).he}`, { action: { label: 'לשיעור', fn: () => setPane('lesson') }, timeout: 2200, key: 'added' });
     }
 }
 
 function addRest() {
-    const minutes = clampDur($('#restDuration').value);
-    const item = normalizeItem({ uid: uid('it'), kind: 'rest', duration: minutes });
-    builder.items.push(item);
+    const item = normalizeItem({ uid: uid('it'), kind: 'rest', duration: clampDur($('#restDuration').value), phase: 'main' });
+    const [, e] = phaseBounds('main');
+    builder.items.splice(e, 0, item);
     ui.newItemUid = item.uid;
     commitBuilder({ library: false });
 }
 
 function removeItem(u) {
-    const idx = builder.items.findIndex(it => it.uid === u);
+    const idx = itemIndex(u);
     if (idx < 0) return;
     const [removed] = builder.items.splice(idx, 1);
-    ui.openNotes.delete(u);
+    ui.openMore.delete(u);
     commitBuilder();
-    toast(`הוסר: ${removed.name}`, {
-        action: { label: 'ביטול', fn: () => { builder.items.splice(Math.min(idx, builder.items.length), 0, removed); commitBuilder(); } },
-        timeout: 4000
+    toast(`הוסר: ${splitName(removed.name).he}`, {
+        action: { label: 'ביטול', fn: () => { builder.items.splice(Math.min(idx, builder.items.length), 0, removed); builder.items = normalizePhases(builder.items); commitBuilder(); } },
+        timeout: 4000, key: 'removed'
     });
 }
 
-function moveItem(u, delta) {
-    const i = builder.items.findIndex(it => it.uid === u);
-    const j = i + delta;
-    if (i < 0 || j < 0 || j >= builder.items.length) return;
-    [builder.items[i], builder.items[j]] = [builder.items[j], builder.items[i]];
+/* חץ למעלה/למטה: מחליף מקום עם השכן, ובקצה של חלק – עובר לחלק הסמוך */
+function moveItem(u, dir) {
+    const i = itemIndex(u);
+    if (i < 0) return;
+    const it = builder.items[i];
+    const j = i + dir;
+    if (j >= 0 && j < builder.items.length && builder.items[j].phase === it.phase) {
+        [builder.items[i], builder.items[j]] = [builder.items[j], builder.items[i]];
+    } else {
+        const r = phaseRank(it.phase) + dir;
+        if (r < 0 || r >= PHASES.length) return;
+        it.phase = PHASE_KEYS[r];
+    }
+    ui.newItemUid = u;
+    commitBuilder({ library: false });
+}
+
+function setItemPhase(u, phase) {
+    const i = itemIndex(u);
+    if (i < 0 || builder.items[i].phase === phase) return;
+    const [it] = builder.items.splice(i, 1);
+    const later = phaseRank(phase) > phaseRank(it.phase);
+    it.phase = phase;
+    const [s, e] = phaseBounds(phase);
+    builder.items.splice(later ? s : e, 0, it);
+    ui.newItemUid = u;
     commitBuilder({ library: false });
 }
 
@@ -575,6 +699,43 @@ function changeDuration(u, delta) {
     if (!it) return;
     it.duration = clampDur(it.duration + delta);
     commitBuilder({ library: false });
+}
+
+function duplicateItem(u) {
+    const i = itemIndex(u);
+    if (i < 0) return;
+    const copy = Object.assign(clone(builder.items[i]), { uid: uid('it') });
+    builder.items.splice(i + 1, 0, copy);
+    ui.newItemUid = copy.uid;
+    commitBuilder();
+}
+
+/* החלפה בתרגיל דומה – אותה קטגוריה, רמה מתאימה ועדיפות לאותו אזור בגוף */
+function swapItem(u) {
+    const i = itemIndex(u);
+    const it = builder.items[i];
+    if (!it || it.kind === 'rest') return;
+    const inLesson = new Set(builder.items.map(x => x.exId));
+    const cur = findExercise(it.exId);
+    const maxLvl = builder.level === 'כל הרמות' ? 3 : levelRank(builder.level);
+    let pool = libraryAll().filter(ex => ex.category === it.category && !inLesson.has(String(ex.id)));
+    const byLevel = pool.filter(ex => levelRank(ex.level) <= maxLvl);
+    if (byLevel.length) pool = byLevel;
+    if (cur && cur.focus && cur.focus.length) {
+        const byFocus = pool.filter(ex => (ex.focus || []).some(f => cur.focus.includes(f)));
+        if (byFocus.length) pool = byFocus;
+    }
+    if (!pool.length) { toast('לא נמצא תרגיל חלופי מאותה קטגוריה', { type: 'warn' }); return; }
+    const ex = pool[Math.floor(Math.random() * pool.length)];
+    const old = clone(it);
+    const fresh = Object.assign(makeItemFromExercise(ex), { uid: it.uid, phase: it.phase });
+    builder.items[i] = fresh;
+    ui.newItemUid = fresh.uid;
+    commitBuilder();
+    toast(`הוחלף ב: ${splitName(ex.name).he}`, {
+        action: { label: 'ביטול', fn: () => { const k = itemIndex(fresh.uid); if (k >= 0) { builder.items[k] = old; commitBuilder(); } } },
+        timeout: 4500, key: 'swap'
+    });
 }
 
 function springChanges(items) {
@@ -597,101 +758,159 @@ function equipmentNeeded(items) {
 }
 
 function distribution(items) {
-    const order = ['warm', 'mat', 'reformer', 'stretch', 'rest'];
-    const labels = { warm: 'חימום', mat: 'מזרן', reformer: 'מכשיר', stretch: 'מתיחות', rest: 'מנוחה' };
     const sums = {};
     items.forEach(it => { const k = catKey(it.category); sums[k] = (sums[k] || 0) + it.duration; });
-    return order.filter(k => sums[k]).map(k => ({ key: k, label: labels[k], minutes: sums[k] }));
+    return CAT_KEY_ORDER.filter(k => sums[k]).map(k => ({ key: k, label: CAT_KEY_LABEL[k], minutes: sums[k] }));
 }
-
 function distBarHtml(items) {
     const total = sumDur(items) || 1;
     return `<div class="dist-bar" aria-hidden="true">${distribution(items).map(d => `<span class="cat-${d.key}" style="width:${(d.minutes / total) * 100}%"></span>`).join('')}</div>`;
+}
+
+function statusHtml() {
+    const editing = builder.editingId ? state.lessons.find(l => l.id === builder.editingId) : null;
+    let s = editing ? `<span class="pill gold">${icon('pen', 13)}עריכת שיעור שמור</span>` : `<span class="pill">${icon('sparkle', 13)}שיעור חדש</span>`;
+    if (builder.dirty && builder.items.length) s += '<span class="unsaved-dot" aria-hidden="true"></span><span>שינויים שלא נשמרו</span>';
+    else if (editing && !builder.dirty) s += `<span class="pill ok">${icon('check', 13)}שמור</span>`;
+    return s;
+}
+
+function statsHtml(items, target) {
+    const total = sumDur(items);
+    const exCount = items.filter(i => i.kind !== 'rest').length;
+    const diff = total - target;
+    let cls = '';
+    let note = `נותרו ${target - total} דק׳ ליעד`;
+    if (!total) note = `יעד: ${target} דקות`;
+    else if (Math.abs(diff) <= 2) { cls = 'ok'; note = diff === 0 ? 'בדיוק ביעד ✓' : `קרוב ליעד ✓ (${diff > 0 ? '+' : ''}${diff})`; }
+    else if (diff > 2) { cls = 'over'; note = `חריגה של ${diff} דק׳`; }
+    const R = 31;
+    const C = 2 * Math.PI * R;
+    const pct = target ? Math.min(total / target, 1) : 0;
+    const dist = distribution(items);
+    return `
+        <div class="ring ${cls}" role="img" aria-label="${total} מתוך ${target} דקות">
+            <svg width="74" height="74" viewBox="0 0 74 74" aria-hidden="true">
+                <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D896AA"/><stop offset="1" stop-color="#8E4C69"/></linearGradient></defs>
+                <circle class="ring-track" cx="37" cy="37" r="${R}"/>
+                <circle class="ring-bar" cx="37" cy="37" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - pct)).toFixed(1)}" ${total ? '' : 'style="opacity:0"'}/>
+            </svg>
+            <div class="ring-center"><b>${total}</b><small>מתוך ${target}′</small></div>
+        </div>
+        <div class="stats-body">
+            <div class="stats-line"><span><b>${exCount}</b> תרגילים${items.length !== exCount ? ` · ${items.length - exCount} מנוחות` : ''}</span><span class="stats-note ${cls}">${note}</span></div>
+            ${dist.length ? distBarHtml(items) + `<div class="legend">${dist.map(d => `<span class="cat-${d.key}"><i></i>${d.label} <b>${d.minutes}′</b></span>`).join('')}</div>` : '<div class="legend">הוסיפי תרגילים כדי לראות את חלוקת הזמן</div>'}
+        </div>`;
+}
+
+function itemHtml(it, i, start, num) {
+    const items = builder.items;
+    const isRest = it.kind === 'rest';
+    const key = catKey(it.category);
+    const nm = splitName(it.name);
+    const open = ui.openMore.has(it.uid);
+    const u = esc(it.uid);
+    const upDisabled = i === 0 && phaseRank(it.phase) === 0;
+    const downDisabled = i === items.length - 1 && phaseRank(it.phase) === PHASES.length - 1;
+    const springs = !isRest && it.springs && !/ללא/.test(it.springs) ? `<span class="springs">${esc(it.springs)}</span>` : '';
+    return `
+    <li class="lesson-item cat-${key} ${isRest ? 'rest' : ''} ${ui.newItemUid === it.uid ? 'is-new' : ''}" data-uid="${u}">
+        <span class="drag-handle" title="גררי כדי לשנות את הסדר" aria-hidden="true">${icon('grip', 16)}</span>
+        <span class="idx">${isRest ? icon('moon', 14) : num}</span>
+        <div class="item-main">
+            <div class="item-name">${isRest ? 'הפסקת מנוחה' : `${esc(nm.he)}${nm.en ? `<span class="nm-en">${esc(nm.en)}</span>` : ''}`}</div>
+            <div class="item-sub">
+                <span class="time">דק׳ ${start}–${start + it.duration}</span>
+                ${!isRest ? `<span class="tag">${esc(catLabel(it.category))}</span>` : ''}
+                ${springs}
+                ${it.note && !open ? `<span class="note-preview">${icon('pen', 11)}${esc(it.note)}</span>` : ''}
+            </div>
+        </div>
+        <div class="stepper" aria-label="משך">
+            <button data-action="dur-dec" data-uid="${u}" aria-label="פחות דקה">−</button>
+            <span>${it.duration} ד׳</span>
+            <button data-action="dur-inc" data-uid="${u}" aria-label="עוד דקה">+</button>
+        </div>
+        <div class="item-actions">
+            <button class="icon-btn sm" data-action="move-up" data-uid="${u}" ${upDisabled ? 'disabled' : ''} aria-label="הזזה למעלה" title="למעלה">${icon('up')}</button>
+            <button class="icon-btn sm" data-action="move-down" data-uid="${u}" ${downDisabled ? 'disabled' : ''} aria-label="הזזה למטה" title="למטה">${icon('down')}</button>
+            <button class="icon-btn sm ${open ? 'on' : ''}" data-action="toggle-more" data-uid="${u}" aria-expanded="${open}" aria-label="אפשרויות: הערה, החלפה, שכפול" title="הערה, החלפה ושכפול">${icon('more')}</button>
+            <button class="icon-btn sm danger" data-action="remove-item" data-uid="${u}" aria-label="הסרה מהשיעור" title="הסרה">${icon('x')}</button>
+        </div>
+        ${open ? `
+        <div class="item-more">
+            <input class="input sm item-note" data-uid="${u}" maxlength="160" value="${esc(it.note)}" placeholder="הערה: מספר חזרות, וריאציה, החלפת קפיצים…">
+            <div class="more-row">
+                <span class="more-label">חלק בשיעור:</span>
+                <div class="seg mini">${PHASES.map(p => `<button type="button" class="${p.key === it.phase ? 'active' : ''}" data-action="set-phase" data-uid="${u}" data-phase="${p.key}">${p.short}</button>`).join('')}</div>
+                <span class="spacer"></span>
+                ${!isRest ? `<button class="btn xs soft" data-action="swap-item" data-uid="${u}">${icon('swap')}החלפה בתרגיל דומה</button>` : ''}
+                <button class="btn xs ghost" data-action="dup-item" data-uid="${u}">${icon('copy')}שכפול</button>
+            </div>
+        </div>` : ''}
+    </li>`;
+}
+
+function renderPhases() {
+    const items = builder.items;
+    const startOf = {};
+    let t = 0;
+    items.forEach(it => { startOf[it.uid] = t; t += it.duration; });
+    let num = 0;
+    const numOf = {};
+    items.forEach(it => { if (it.kind !== 'rest') numOf[it.uid] = ++num; });
+
+    $('#lessonItems').innerHTML = PHASES.map(ph => {
+        const its = items.filter(it => it.phase === ph.key);
+        const mins = sumDur(its);
+        const exN = its.filter(x => x.kind !== 'rest').length;
+        const first = its.length ? startOf[its[0].uid] : 0;
+        return `
+        <section class="phase ph-${ph.key}" data-phase="${ph.key}">
+            <header class="phase-head">
+                <span class="phase-ico">${icon(ph.icon, 17)}</span>
+                <div class="phase-text">
+                    <div class="phase-title">${ph.label}</div>
+                    <div class="phase-meta">${its.length ? `${exN} תרגילים · דק׳ ${first}–${first + mins}` : ph.hint}</div>
+                </div>
+                <span class="phase-time">${mins} דק׳</span>
+            </header>
+            <ol class="phase-list" data-phase="${ph.key}">
+                ${its.map(it => itemHtml(it, items.indexOf(it), startOf[it.uid], numOf[it.uid])).join('')}
+                <li class="phase-empty">${ph.empty}</li>
+            </ol>
+        </section>`;
+    }).join('');
 }
 
 function renderBuilder() {
     const items = builder.items;
     const total = sumDur(items);
     const exCount = items.filter(i => i.kind !== 'rest').length;
-    const target = builder.target;
-
-    /* status line */
     const editing = builder.editingId ? state.lessons.find(l => l.id === builder.editingId) : null;
-    let status = editing ? `<span class="pill gold">${icon('pen', 13)}עריכת שיעור שמור</span>` : '<span class="pill">שיעור חדש</span>';
-    if (builder.dirty && items.length) status += '<span class="unsaved-dot" aria-hidden="true"></span><span>שינויים שלא נשמרו</span>';
-    else if (editing && !builder.dirty) status += `<span class="pill ok">${icon('check', 13)}שמור</span>`;
-    $('#lessonStatus').innerHTML = status;
 
-    /* stats */
-    const diff = total - target;
-    let cls = '';
-    let note = `נותרו ${target - total} דק׳ ליעד`;
-    if (!total) note = `יעד: ${target} דק׳`;
-    else if (Math.abs(diff) <= 2) { cls = 'ok'; note = diff === 0 ? 'בדיוק ביעד ✓' : `קרוב ליעד ✓ (${diff > 0 ? '+' : ''}${diff})`; }
-    else if (diff > 2) { cls = 'over'; note = `חריגה של ${diff} דק׳ מהיעד`; }
-    const pct = Math.min(100, target ? (total / target) * 100 : 0);
-    const dist = distribution(items);
-    $('#lessonStats').innerHTML = `
-        <div class="stats-top">
-            <div class="stats-time">${total} <small>/ ${target} דק׳ · ${exCount} תרגילים</small></div>
-            <div class="stats-note ${cls}">${note}</div>
-        </div>
-        <div class="progress ${cls}" role="progressbar" aria-valuemin="0" aria-valuemax="${target}" aria-valuenow="${total}"><span style="width:${pct}%"></span></div>
-        ${dist.length ? distBarHtml(items) + `<div class="legend">${dist.map(d => `<span class="cat-${d.key}"><i></i>${d.label} <b>${d.minutes}′</b></span>`).join('')}</div>` : ''}`;
-
-    /* items */
-    const list = $('#lessonItems');
-    let t = 0;
-    list.innerHTML = items.map((raw, i) => {
-        const it = raw;
-        const start = t;
-        t += it.duration;
-        const key = catKey(it.category);
-        const isRest = it.kind === 'rest';
-        const showNote = ui.openNotes.has(it.uid);
-        const springs = !isRest && it.springs && !/ללא/.test(it.springs) ? `<span class="springs">${esc(it.springs)}</span>` : '';
-        return `
-        <li class="lesson-item cat-${key} ${isRest ? 'rest' : ''} ${ui.newItemUid === it.uid ? 'is-new' : ''}" data-uid="${esc(it.uid)}">
-            <span class="drag-handle" title="גררי לשינוי הסדר">${icon('grip', 16)}</span>
-            <span class="idx">${i + 1}</span>
-            <div class="item-main">
-                <div class="item-name">${isRest ? '🌸 ' : ''}${esc(it.name)}</div>
-                <div class="item-sub">
-                    <span>דק׳ ${start}–${t}</span>
-                    ${!isRest ? `<span class="tag">${esc(catLabel(it.category))}</span>` : ''}
-                    ${springs}
-                    ${it.note && !showNote ? `<span class="note-preview">📝 ${esc(it.note)}</span>` : ''}
-                </div>
-            </div>
-            <div class="stepper" aria-label="משך">
-                <button data-action="dur-dec" data-uid="${esc(it.uid)}" aria-label="פחות דקה">−</button>
-                <span>${it.duration} ד׳</span>
-                <button data-action="dur-inc" data-uid="${esc(it.uid)}" aria-label="עוד דקה">+</button>
-            </div>
-            <div class="item-actions">
-                <button class="icon-btn sm" data-action="move-up" data-uid="${esc(it.uid)}" ${i === 0 ? 'disabled' : ''} aria-label="הזזה למעלה" title="למעלה">${icon('up')}</button>
-                <button class="icon-btn sm" data-action="move-down" data-uid="${esc(it.uid)}" ${i === items.length - 1 ? 'disabled' : ''} aria-label="הזזה למטה" title="למטה">${icon('down')}</button>
-                <button class="icon-btn sm ${it.note ? 'has-note' : ''}" data-action="toggle-note" data-uid="${esc(it.uid)}" aria-label="הערה לתרגיל" title="הערה (חזרות, וריאציה, קפיצים…)">${icon('pen')}</button>
-                <button class="icon-btn sm danger" data-action="remove-item" data-uid="${esc(it.uid)}" aria-label="הסרה מהשיעור" title="הסרה">${icon('x')}</button>
-            </div>
-            ${showNote ? `<div class="note-row"><input class="input item-note" data-uid="${esc(it.uid)}" maxlength="160" value="${esc(it.note)}" placeholder="הערה: מספר חזרות, וריאציה, החלפת קפיצים…"></div>` : ''}
-        </li>`;
-    }).join('');
+    $('#lessonStatus').innerHTML = statusHtml();
+    $('#lessonStats').innerHTML = statsHtml(items, builder.target);
     $('#emptyLesson').hidden = items.length > 0;
+    const hint = $('#sortHint');
+    hint.hidden = items.length < 2;
+    hint.innerHTML = `${icon('grip')}גררי את הידית כדי לסדר את השיעור מההתחלה ועד הסוף — גם בין החלקים — או השתמשי בחיצים.`;
+    renderPhases();
 
     if (ui.newItemUid) {
-        const li = list.querySelector(`[data-uid="${CSS.escape(ui.newItemUid)}"]`);
-        if (li && !isCompact()) li.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        const li = document.querySelector(`.lesson-item[data-uid="${CSS.escape(ui.newItemUid)}"]`);
+        if (li && (!isCompact() || ui.pane === 'lesson')) li.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         ui.newItemUid = null;
     }
 
-    /* checks */
-    const ex = items.filter(i => i.kind !== 'rest');
     let checks = '';
-    if (ex.length) {
+    if (exCount) {
+        const has = k => items.some(i => i.phase === k && i.kind !== 'rest');
+        const diff = total - builder.target;
         const c = [
-            { ok: catKey(ex[0].category) === 'warm', label: 'פתיחה בחימום' },
-            { ok: catKey(ex[ex.length - 1].category) === 'stretch', label: 'סיום במתיחות' },
+            { ok: has('open'), label: 'פתיחה וחימום' },
+            { ok: has('main'), label: 'חלק מרכזי' },
+            { ok: has('close'), label: 'סיום ושחרור' },
             { ok: Math.abs(diff) <= 2, label: 'משך תואם ליעד' }
         ];
         checks = c.map(x => `<span class="check ${x.ok ? 'ok' : ''}">${icon(x.ok ? 'check' : 'circle', 13)}${x.label}</span>`).join('');
@@ -700,13 +919,11 @@ function renderBuilder() {
     }
     $('#lessonChecks').innerHTML = checks;
 
-    /* footer */
     $('#lessonFoot').innerHTML = editing
         ? `<button class="btn primary" data-action="save-lesson">${icon('check')}עדכון השיעור</button>
            <button class="btn" data-action="save-as-new" title="שמירת עותק כשיעור נפרד">${icon('copy')}שמירה כחדש</button>`
         : `<button class="btn primary single" data-action="save-lesson">שמירת השיעור 🌸</button>`;
 
-    /* mobile pane badge */
     $('#paneBadge').textContent = items.length ? `${exCount} · ${total}′` : '0';
 }
 
@@ -759,7 +976,7 @@ async function newLesson() {
     if (!(await confirmDiscard('בשיעור שבבנייה יש שינויים שלא נשמרו. להתחיל שיעור חדש ולוותר עליהם?'))) return;
     builder = newBuilder();
     state.draft = builder;
-    ui.openNotes.clear();
+    ui.openMore.clear();
     save();
     syncBuilderInputs();
     renderAll();
@@ -774,48 +991,56 @@ async function clearLesson() {
     const ok = await confirmDialog({ title: 'ניקוי השיעור', message: 'להסיר את כל התרגילים מהשיעור שבבנייה?', okLabel: 'ניקוי', danger: true });
     if (!ok) return;
     builder.items = [];
-    ui.openNotes.clear();
+    ui.openMore.clear();
     commitBuilder();
 }
 
 /* ---------- טיוטה אוטומטית ---------- */
-function generateDraft({ type, target, withRest }) {
+function generateDraft({ type, target, withRest, level, focus }) {
     const lib = libraryAll();
-    const mainCats = type === 'mat' ? ['פילאטיס מזרן'] : type === 'reformer' ? ['פילאטיס מכשיר'] : ['פילאטיס מזרן', 'פילאטיס מכשיר'];
-    const fitsMain = ex => (type === 'mixed' ? true : type === 'reformer' ? isReformer(ex) : !isReformer(ex));
-    const fitsSide = ex => (type === 'mat' ? !isReformer(ex) : true);
-
-    const pick = (pool, budget) => {
+    const maxLvl = level === 'כל הרמות' ? 2 : levelRank(level);
+    const mainCats = type === 'mat' ? ['פילאטיס מזרן', 'פילאטיס עם אביזרים']
+        : type === 'reformer' ? ['פילאטיס מכשיר']
+            : ['פילאטיס מזרן', 'פילאטיס מכשיר', 'פילאטיס עם אביזרים'];
+    const fitsSide = ex => !needsProps(ex) && (type === 'mat' ? !isMachine(ex) : true);
+    const fitsMain = ex => (type === 'mixed' ? !/צ׳ר|קדילאק|בארל|קורקטור/.test(ex.equipment) : type === 'reformer' ? isReformer(ex) : !isMachine(ex));
+    const withLevel = pool => { const p = pool.filter(ex => levelRank(ex.level) <= maxLvl); return p.length >= 3 ? p : pool; };
+    const prioritized = pool => {
+        const f = focus ? shuffle(pool.filter(ex => (ex.focus || []).includes(focus))) : [];
+        return f.concat(shuffle(pool.filter(ex => !f.includes(ex))));
+    };
+    const pick = (pool, budget, caps = {}) => {
         const chosen = [];
+        const counts = {};
         let used = 0;
-        shuffle(pool).forEach(ex => {
-            if (used + ex.duration <= budget) { chosen.push(ex); used += ex.duration; }
+        prioritized(pool).forEach(ex => {
+            if (used + ex.duration > budget) return;
+            if (caps[ex.category] != null && (counts[ex.category] || 0) >= caps[ex.category]) return;
+            chosen.push(ex);
+            used += ex.duration;
+            counts[ex.category] = (counts[ex.category] || 0) + 1;
         });
         return chosen.sort((a, b) => exerciseOrder(a) - exerciseOrder(b));
     };
 
     const restMin = withRest && target >= 40 ? 2 : 0;
-    const warm = pick(lib.filter(ex => ex.category === 'תרגילי חימום' && fitsSide(ex)), Math.max(6, Math.round(target * 0.18)));
-    const stretch = pick(lib.filter(ex => ex.category === 'תרגילי מתיחות' && fitsSide(ex)), Math.max(5, Math.round(target * 0.15)));
-    let mainPool = lib.filter(ex => mainCats.includes(ex.category) && fitsMain(ex));
+    const warm = pick(withLevel(lib.filter(ex => ex.category === 'תרגילי חימום' && fitsSide(ex))), Math.max(6, Math.round(target * 0.18)));
+    const stretch = pick(withLevel(lib.filter(ex => ex.category === 'תרגילי מתיחות' && fitsSide(ex))), Math.max(5, Math.round(target * 0.14)));
+    const warmEn = new Set(warm.map(ex => splitName(ex.name).en.toLowerCase()).filter(Boolean));
+    let mainPool = lib.filter(ex => mainCats.includes(ex.category) && fitsMain(ex) && !warmEn.has(splitName(ex.name).en.toLowerCase()));
     if (!mainPool.length) mainPool = lib.filter(ex => mainCats.includes(ex.category));
-    const mainBudget = target - sumDur(warm) - sumDur(stretch) - restMin;
-    let main = pick(mainPool, mainBudget);
-    if (type === 'mixed') {
-        // משולב: קודם מזרן ואז מכשיר
-        main = main.filter(e => !isReformer(e)).concat(main.filter(isReformer));
-    }
+    const caps = { 'פילאטיס עם אביזרים': type === 'mat' ? 2 : 1 };
+    let main = pick(withLevel(mainPool), target - sumDur(warm) - sumDur(stretch) - restMin, caps);
+    if (type === 'mixed') main = main.filter(e => !isMachine(e)).concat(main.filter(isMachine));
 
-    const toItems = arr => arr.map(makeItemFromExercise);
-    const mainItems = toItems(main);
-    let items = toItems(warm);
+    const toItems = (arr, phase) => arr.map(ex => Object.assign(makeItemFromExercise(ex), { phase }));
+    const mainItems = toItems(main, 'main');
+    let mainWithRest = mainItems;
     if (restMin && mainItems.length > 2) {
         const half = Math.ceil(mainItems.length / 2);
-        items = items.concat(mainItems.slice(0, half), [normalizeItem({ uid: uid('it'), kind: 'rest', duration: restMin })], mainItems.slice(half));
-    } else {
-        items = items.concat(mainItems);
+        mainWithRest = mainItems.slice(0, half).concat([normalizeItem({ uid: uid('it'), kind: 'rest', duration: restMin, phase: 'main' })], mainItems.slice(half));
     }
-    items = items.concat(toItems(stretch));
+    const items = toItems(warm, 'open').concat(mainWithRest, toItems(stretch, 'close'));
 
     // השלמת דקות שנותרו ליעד – הארכה עדינה של תרגילי החלק המרכזי
     let left = target - sumDur(items);
@@ -826,20 +1051,15 @@ function generateDraft({ type, target, withRest }) {
     return items;
 }
 
-function isAutoTitle(t) {
-    const s = String(t || '').trim();
-    return !s || s === DEFAULT_TITLE || /^שיעור (מזרן|רפורמר|משולב) · \d+ דק׳$/.test(s);
-}
+const isAutoTitle = t => { const s = String(t || '').trim(); return !s || s === DEFAULT_TITLE || /^שיעור (מזרן|רפורמר|משולב) · \d+ דק׳$/.test(s); };
 
 function applyDraft(opts) {
     const items = generateDraft(opts);
     if (!items.length) { toast('לא נמצאו מספיק תרגילים במאגר לטיוטה כזו', { type: 'warn' }); return; }
-    builder.items = items;
-    builder.type = opts.type;
-    builder.target = opts.target;
-    builder.editingId = null;
+    Object.assign(builder, { items, type: opts.type, target: opts.target, level: opts.level, editingId: null });
+    if (opts.focus && !builder.notes.trim()) builder.notes = `פוקוס: ${opts.focus}`;
     if (isAutoTitle(builder.title)) builder.title = `שיעור ${LESSON_TYPES[opts.type]} · ${opts.target} דק׳`;
-    ui.openNotes.clear();
+    ui.openMore.clear();
     syncBuilderInputs();
     commitBuilder();
     setPane('lesson');
@@ -849,20 +1069,27 @@ function applyDraft(opts) {
 function openDraftModal() {
     const typeOpts = Object.keys(LESSON_TYPES).map(k => `<option value="${k}" ${k === builder.type ? 'selected' : ''}>${LESSON_TYPES[k]}</option>`).join('');
     const targetOpts = TARGETS.map(t => `<option value="${t}" ${t === builder.target ? 'selected' : ''}>${t} דקות</option>`).join('');
+    const levelOpts = LEVELS.map(l => `<option ${l === builder.level ? 'selected' : ''}>${l}</option>`).join('');
+    const focusOpts = `<option value="">בלי פוקוס מיוחד</option>` + FOCUS_AREAS.map(f => `<option>${f}</option>`).join('');
     openModal({
         title: '✨ טיוטה אוטומטית',
         body: `
-            <p class="muted">המערכת תרכיב טיוטת שיעור מאוזנת — <b>חימום ← חלק מרכזי ← מתיחות</b> — לפי סוג השיעור והזמן. אחרי זה הכל פתוח לשינויים: להחליף תרגילים, להזיז, לקצר ולהאריך.</p>
+            <p class="muted">המערכת תרכיב טיוטת שיעור מאוזנת — <b>פתיחה וחימום ← חלק מרכזי ← סיום ושחרור</b> — לפי סוג השיעור, הרמה והזמן. אחר כך הכל פתוח לשינויים.</p>
             <div class="form-row">
                 <label class="field"><span>סוג השיעור</span><select class="input" id="drType">${typeOpts}</select></label>
                 <label class="field"><span>משך השיעור</span><select class="input" id="drTarget">${targetOpts}</select></label>
+            </div>
+            <div class="form-row">
+                <label class="field"><span>רמה</span><select class="input" id="drLevel">${levelOpts}</select></label>
+                <label class="field"><span>פוקוס <small>(לא חובה)</small></span><select class="input" id="drFocus">${focusOpts}</select></label>
             </div>
             <label class="check-field"><input type="checkbox" id="drRest" checked> הפסקת מנוחה קצרה באמצע השיעור</label>
             ${builder.items.length ? '<p class="warn-note">שימי לב: הטיוטה תחליף את התרגילים שכרגע בשיעור.</p>' : ''}`,
         actions: [
             {
                 label: '✨ הרכבת טיוטה', className: 'btn primary', onClick: m => {
-                    applyDraft({ type: m.el.querySelector('#drType').value, target: Number(m.el.querySelector('#drTarget').value), withRest: m.el.querySelector('#drRest').checked });
+                    const q = s => m.el.querySelector(s);
+                    applyDraft({ type: q('#drType').value, target: Number(q('#drTarget').value), level: q('#drLevel').value, focus: q('#drFocus').value, withRest: q('#drRest').checked });
                 }
             },
             { label: 'ביטול', className: 'btn ghost' }
@@ -870,78 +1097,161 @@ function openDraftModal() {
     });
 }
 
-/* ---------- גרירה ושחרור ---------- */
-let drag = null;
-function setupDragAndDrop() {
-    const drop = $('#lessonDrop');
-    const list = $('#lessonItems');
-    const clearMarks = () => list.querySelectorAll('.drop-before, .drop-after').forEach(el => el.classList.remove('drop-before', 'drop-after'));
+/* ---------- סידור בגרירה (עכבר ומגע) ---------- */
+function setupSorting() {
+    const root = $('#lessonItems');
+    let st = null;
 
-    document.addEventListener('pointerdown', e => {
+    const scrollBox = () => ['#lessonDrop', '#lessonPanel'].map(s => $(s))
+        .find(b => b.scrollHeight > b.clientHeight + 2 && /auto|scroll/.test(getComputedStyle(b).overflowY)) || null;
+
+    root.addEventListener('pointerdown', e => {
         const h = e.target.closest('.drag-handle');
-        if (h) h.closest('.lesson-item').draggable = true;
-    });
-    document.addEventListener('dragstart', e => {
-        const li = e.target.closest && e.target.closest('.lesson-item');
-        if (li && li.draggable) {
-            drag = { type: 'item', uid: li.dataset.uid };
-            li.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', li.dataset.uid);
-            return;
-        }
-        const card = e.target.closest && e.target.closest('.ex-card');
-        if (card) {
-            drag = { type: 'ex', id: card.dataset.exId };
-            e.dataTransfer.effectAllowed = 'copy';
-            e.dataTransfer.setData('text/plain', card.dataset.exId);
-        }
-    });
-    document.addEventListener('dragend', () => {
-        list.querySelectorAll('.lesson-item').forEach(li => { li.draggable = false; li.classList.remove('dragging'); });
-        clearMarks();
-        drop.classList.remove('drag-over');
-        drag = null;
-    });
-
-    const dropIndex = e => {
-        const li = e.target.closest('.lesson-item');
-        if (!li) return { index: builder.items.length, li: null, after: true };
-        const rect = li.getBoundingClientRect();
-        const after = e.clientY > rect.top + rect.height / 2;
-        const i = builder.items.findIndex(it => it.uid === li.dataset.uid);
-        return { index: after ? i + 1 : i, li, after };
-    };
-
-    drop.addEventListener('dragover', e => {
-        if (!drag) return;
+        if (!h || e.button > 0) return;
+        const li = h.closest('.lesson-item');
+        if (!li) return;
         e.preventDefault();
-        e.dataTransfer.dropEffect = drag.type === 'ex' ? 'copy' : 'move';
-        drop.classList.add('drag-over');
-        clearMarks();
-        const { li, after } = dropIndex(e);
-        if (li) li.classList.add(after ? 'drop-after' : 'drop-before');
+        // the dragged row moves inside the DOM while sorting, which would drop pointer capture,
+        // so movement is tracked on the window instead
+        if (h.hasPointerCapture && h.hasPointerCapture(e.pointerId)) h.releasePointerCapture(e.pointerId);
+        const r = li.getBoundingClientRect();
+        st = { li, id: e.pointerId, y: e.clientY, grab: e.clientY - r.top, box: scrollBox(), raf: 0, changed: false };
+        li.classList.add('sorting');
+        document.body.classList.add('is-sorting');
+        place();
+        loop();
     });
-    drop.addEventListener('dragleave', e => {
-        if (!drop.contains(e.relatedTarget)) { drop.classList.remove('drag-over'); clearMarks(); }
-    });
-    drop.addEventListener('drop', e => {
-        if (!drag) return;
+    window.addEventListener('pointermove', e => {
+        if (!st || e.pointerId !== st.id) return;
         e.preventDefault();
-        let { index } = dropIndex(e);
-        if (drag.type === 'ex') {
-            addExerciseToLesson(drag.id, index);
+        st.y = e.clientY;
+        place();
+    }, { passive: false });
+    const end = e => { if (st && e.pointerId === st.id) finish(); };
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+    // stop the page from scrolling under the finger while a row is being dragged
+    window.addEventListener('touchmove', e => { if (st) e.preventDefault(); }, { passive: false });
+
+    function place() {
+        const y = st.y;
+        const li = st.li;
+        const lists = [...root.querySelectorAll('.phase-list')];
+        let list = lists[0];
+        let best = Infinity;
+        lists.forEach(l => {
+            const r = l.closest('.phase').getBoundingClientRect();
+            const d = y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0;
+            if (d < best) { best = d; list = l; }
+        });
+        let before = null;
+        for (const o of list.querySelectorAll('.lesson-item')) {
+            if (o === li) continue;
+            const r = o.getBoundingClientRect();
+            if (y < r.top + r.height / 2) { before = o; break; }
+        }
+        if (!before) before = list.querySelector('.phase-empty');
+        if (li.parentElement !== list || li.nextElementSibling !== before) {
+            list.insertBefore(li, before);
+            st.changed = true;
+        }
+        li.style.transform = 'none';
+        const nr = li.getBoundingClientRect();
+        li.style.transform = `translateY(${y - st.grab - nr.top}px) scale(1.02)`;
+    }
+
+    function loop() {
+        if (!st) return;
+        const edge = 60;
+        let dy = 0;
+        if (st.box) {
+            const r = st.box.getBoundingClientRect();
+            const foot = $('#lessonFoot');
+            const bottom = st.box.contains(foot) ? Math.min(r.bottom, foot.getBoundingClientRect().top) : r.bottom;
+            if (st.y < r.top + edge) dy = -(r.top + edge - st.y) / 4;
+            else if (st.y > bottom - edge) dy = (st.y - (bottom - edge)) / 4;
+            dy = Math.max(-18, Math.min(18, dy));
+            if (dy) st.box.scrollTop += dy;
         } else {
-            const from = builder.items.findIndex(it => it.uid === drag.uid);
-            if (from >= 0) {
-                const [moved] = builder.items.splice(from, 1);
-                if (index > from) index--;
-                builder.items.splice(index, 0, moved);
-                commitBuilder({ library: false });
-            }
+            const top = $('.topbar').getBoundingClientRect().bottom + 70;
+            const bottom = window.innerHeight - (window.matchMedia('(max-width: 760px)').matches ? 100 : 30);
+            if (st.y < top) dy = -(top - st.y) / 4;
+            else if (st.y > bottom) dy = (st.y - bottom) / 4;
+            dy = Math.max(-18, Math.min(18, dy));
+            if (dy) window.scrollBy(0, dy);
         }
-        drop.classList.remove('drag-over');
-        clearMarks();
+        if (dy) place();
+        st.raf = requestAnimationFrame(loop);
+    }
+
+    function finish() {
+        cancelAnimationFrame(st.raf);
+        const { li, changed } = st;
+        st = null;
+        li.classList.remove('sorting');
+        li.style.transform = '';
+        document.body.classList.remove('is-sorting');
+        if (!changed) return;
+        const byUid = new Map(builder.items.map(it => [it.uid, it]));
+        const next = [];
+        root.querySelectorAll('.phase-list').forEach(list => {
+            const ph = list.dataset.phase;
+            list.querySelectorAll('.lesson-item').forEach(el => {
+                const it = byUid.get(el.dataset.uid);
+                if (it) { it.phase = ph; next.push(it); }
+            });
+        });
+        if (next.length === builder.items.length) builder.items = next;
+        ui.newItemUid = li.dataset.uid;
+        commitBuilder({ library: false });
+    }
+}
+
+/* גרירת תרגיל מהמאגר אל השיעור (מחשב) */
+function setupLibraryDrop() {
+    const drop = $('#lessonDrop');
+    let dragExId = null;
+    const clear = () => {
+        drop.querySelectorAll('.drop-before, .drop-after').forEach(el => el.classList.remove('drop-before', 'drop-after'));
+        drop.querySelectorAll('.phase.drop-target').forEach(el => el.classList.remove('drop-target'));
+    };
+    const target = e => {
+        const li = e.target.closest('.lesson-item');
+        const phaseEl = e.target.closest('.phase');
+        if (li && phaseEl) {
+            const r = li.getBoundingClientRect();
+            const after = e.clientY > r.top + r.height / 2;
+            const i = itemIndex(li.dataset.uid);
+            return { phase: phaseEl.dataset.phase, index: after ? i + 1 : i, li, after, phaseEl };
+        }
+        if (phaseEl) return { phase: phaseEl.dataset.phase, index: null, phaseEl };
+        return { phase: null, index: null };
+    };
+    document.addEventListener('dragstart', e => {
+        const card = e.target.closest && e.target.closest('.ex-card');
+        if (!card) return;
+        dragExId = card.dataset.exId;
+        e.dataTransfer.effectAllowed = 'copy';
+        e.dataTransfer.setData('text/plain', dragExId);
+    });
+    document.addEventListener('dragend', () => { dragExId = null; clear(); });
+    drop.addEventListener('dragover', e => {
+        if (!dragExId) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        clear();
+        const t = target(e);
+        if (t.li) t.li.classList.add(t.after ? 'drop-after' : 'drop-before');
+        if (t.phaseEl) t.phaseEl.classList.add('drop-target');
+    });
+    drop.addEventListener('dragleave', e => { if (!drop.contains(e.relatedTarget)) clear(); });
+    drop.addEventListener('drop', e => {
+        if (!dragExId) return;
+        e.preventDefault();
+        const t = target(e);
+        clear();
+        addExerciseToLesson(dragExId, { phase: t.phase, index: t.index });
+        dragExId = null;
     });
 }
 
@@ -949,9 +1259,7 @@ function setupDragAndDrop() {
    השיעורים שלי
    ========================================================= */
 const getLesson = id => state.lessons.find(l => l.id === id);
-function lessonStats(l) {
-    return { total: sumDur(l.items), exCount: l.items.filter(i => i.kind !== 'rest').length };
-}
+const lessonStats = l => ({ total: sumDur(l.items), exCount: l.items.filter(i => i.kind !== 'rest').length });
 function nextEventFor(lessonId) {
     const t = todayStr();
     return state.events.filter(e => e.lessonId === lessonId && e.date >= t).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))[0] || null;
@@ -981,7 +1289,8 @@ function renderLessons() {
         title: (a, b) => a.title.localeCompare(b.title, 'he'),
         duration: (a, b) => sumDur(a.items) - sumDur(b.items),
         next: (a, b) => {
-            const na = nextEventFor(a.id), nb = nextEventFor(b.id);
+            const na = nextEventFor(a.id);
+            const nb = nextEventFor(b.id);
             if (!na && !nb) return b.updatedAt - a.updatedAt;
             if (!na) return 1;
             if (!nb) return -1;
@@ -999,6 +1308,8 @@ function renderLessons() {
         const last = lastTaughtFor(l.id);
         const editing = builder.editingId === l.id;
         const id = esc(l.id);
+        const names = l.items.filter(i => i.kind !== 'rest').map(i => splitName(i.name).he);
+        const preview = names.slice(0, 4).join(' · ') + (names.length > 4 ? ` <b>+${names.length - 4}</b>` : '');
         return `
         <article class="lesson-card">
             <div class="lc-head">
@@ -1010,12 +1321,13 @@ function renderLessons() {
                 </div>
             </div>
             <div class="lc-chips">
-                <span class="pill">${st.total} דק׳</span>
+                <span class="pill rose">${icon('clock', 13)}${st.total} דק׳</span>
                 <span class="pill">${st.exCount} תרגילים</span>
                 <span class="pill">${esc(LESSON_TYPES[l.type])}</span>
                 <span class="pill">${esc(l.level)}</span>
             </div>
             ${l.notes ? `<p class="lc-notes">${esc(l.notes)}</p>` : ''}
+            ${preview ? `<p class="lc-preview">${preview}</p>` : ''}
             ${distBarHtml(l.items)}
             <div class="lc-sched">
                 ${next ? `<span>📅 שיבוץ הבא: <b>${relativeDay(next.date) || formatDateMedium(next.date)}${next.time ? ' · ' + next.time : ''}</b>${next.group ? ' · ' + esc(next.group) : ''}</span>` : '<span>עדיין לא משובץ בלוח</span>'}
@@ -1037,7 +1349,7 @@ function loadIntoBuilder(l) {
         items: clone(l.items).map(it => Object.assign(it, { uid: uid('it') })), dirty: false
     });
     state.draft = builder;
-    ui.openNotes.clear();
+    ui.openMore.clear();
     save();
     syncBuilderInputs();
 }
@@ -1092,27 +1404,38 @@ function lessonSheetHtml(lesson, { full = true } = {}) {
     const st = lessonStats(lesson);
     const equip = equipmentNeeded(lesson.items);
     const sc = springChanges(lesson.items);
+    const startOf = {};
     let t = 0;
+    lesson.items.forEach(it => { startOf[it.uid] = t; t += it.duration; });
     let n = 0;
-    const rows = lesson.items.map(raw => {
-        const it = itemInfo(raw);
-        const start = t;
-        t += it.duration;
-        const key = catKey(it.category);
-        if (it.kind === 'rest') {
-            return `<li class="cat-rest"><div class="sl-head"><span class="sl-name">🌸 ${esc(it.name)}</span><span class="sl-time">דק׳ ${start}–${t} · ${it.duration} דק׳</span></div>${it.note ? `<p class="sl-note">📝 ${esc(it.note)}</p>` : ''}</li>`;
-        }
-        n++;
-        const springs = it.springs && !/ללא/.test(it.springs) ? `<span class="springs">קפיצים: ${esc(it.springs)}</span>` : '';
-        const equipment = it.equipment && !/^ללא/.test(it.equipment) ? `<span>${esc(it.equipment)}</span>` : '';
+    const phasesHtml = PHASES.map(ph => {
+        const its = lesson.items.filter(i => i.phase === ph.key);
+        if (!its.length) return '';
+        const rows = its.map(raw => {
+            const it = itemInfo(raw);
+            const start = startOf[raw.uid];
+            const range = `דק׳ ${start}–${start + it.duration} · ${it.duration} דק׳`;
+            if (it.kind === 'rest') {
+                return `<li class="cat-rest"><div class="sl-head"><span class="sl-name">☁︎ הפסקת מנוחה</span><span class="sl-time">${range}</span></div>${it.note ? `<p class="sl-note">📝 ${esc(it.note)}</p>` : ''}</li>`;
+            }
+            n++;
+            const nm = splitName(it.name);
+            const springs = it.springs && !/ללא/.test(it.springs) ? `<span class="springs">קפיצים: ${esc(it.springs)}</span>` : '';
+            const equipment = it.equipment && !/^ללא/.test(it.equipment) ? `<span>${esc(it.equipment)}</span>` : '';
+            return `
+                <li class="cat-${catKey(it.category)}">
+                    <div class="sl-head"><span class="sl-name"><span class="num">${n}.</span>${esc(nm.he)}${nm.en ? `<span class="nm-en">${esc(nm.en)}</span>` : ''}</span><span class="sl-time">${range}</span></div>
+                    ${springs || equipment ? `<div class="sl-meta">${springs}${equipment}</div>` : ''}
+                    ${full && it.description ? `<p class="sl-desc">${esc(it.description)}</p>` : ''}
+                    ${it.tips ? `<p class="sl-tips">${esc(it.tips)}</p>` : ''}
+                    ${it.note ? `<p class="sl-note">📝 ${esc(it.note)}</p>` : ''}
+                </li>`;
+        }).join('');
         return `
-            <li class="cat-${key}">
-                <div class="sl-head"><span class="sl-name"><span class="num">${n}.</span>${esc(it.name)}</span><span class="sl-time">דק׳ ${start}–${t} · ${it.duration} דק׳</span></div>
-                ${springs || equipment ? `<div class="sl-meta">${springs}${equipment}</div>` : ''}
-                ${full && it.description ? `<p class="sl-desc">${esc(it.description)}</p>` : ''}
-                ${it.tips ? `<p class="sl-tips">${esc(it.tips)}</p>` : ''}
-                ${it.note ? `<p class="sl-note">📝 ${esc(it.note)}</p>` : ''}
-            </li>`;
+            <div class="sheet-phase ph-${ph.key}">
+                <div class="sheet-phase-head"><span class="phase-ico">${icon(ph.icon, 15)}</span>${ph.label}<span class="sheet-phase-time">${sumDur(its)} דק׳</span></div>
+                <ol class="sheet-list">${rows}</ol>
+            </div>`;
     }).join('');
     return `
         <div class="sheet">
@@ -1120,7 +1443,7 @@ function lessonSheetHtml(lesson, { full = true } = {}) {
                 <div class="sheet-brand">EVERYDRAY</div>
                 <h2>${esc(lesson.title)}</h2>
                 <div class="sheet-meta">
-                    <span class="pill">${st.total} דק׳</span><span class="pill">${st.exCount} תרגילים</span>
+                    <span class="pill rose">${st.total} דק׳</span><span class="pill">${st.exCount} תרגילים</span>
                     <span class="pill">${esc(LESSON_TYPES[lesson.type] || '')}</span><span class="pill">${esc(lesson.level || '')}</span>
                     ${sc.used ? `<span class="pill">החלפות קפיצים: ${sc.count}</span>` : ''}
                 </div>
@@ -1128,7 +1451,7 @@ function lessonSheetHtml(lesson, { full = true } = {}) {
             ${lesson.notes ? `<div class="sheet-box"><strong>פוקוס השיעור:</strong> ${esc(lesson.notes)}</div>` : ''}
             ${equip.length ? `<div class="sheet-box"><strong>ציוד להכנה:</strong> ${equip.map(esc).join(' · ')}</div>` : ''}
             ${lesson.items.length ? distBarHtml(lesson.items) : ''}
-            <ol class="sheet-list">${rows || '<li>אין עדיין תרגילים בשיעור.</li>'}</ol>
+            ${phasesHtml || '<p class="muted">אין עדיין תרגילים בשיעור.</p>'}
         </div>`;
 }
 
@@ -1158,17 +1481,21 @@ function lessonText(lesson) {
     if (lesson.notes) lines.push(`פוקוס: ${lesson.notes}`);
     const equip = equipmentNeeded(lesson.items);
     if (equip.length) lines.push(`ציוד: ${equip.join(', ')}`);
-    lines.push('');
     let n = 0;
-    lesson.items.forEach(it => {
-        if (it.kind === 'rest') {
-            lines.push(`   ☁︎ מנוחה – ${it.duration} דק׳`);
-        } else {
-            n++;
-            const springs = it.springs && !/ללא/.test(it.springs) ? ` | קפיצים: ${it.springs}` : '';
-            lines.push(`${n}. ${it.name} – ${it.duration} דק׳${springs}`);
-        }
-        if (it.note) lines.push(`   📝 ${it.note}`);
+    PHASES.forEach(ph => {
+        const its = lesson.items.filter(i => i.phase === ph.key);
+        if (!its.length) return;
+        lines.push('', `— ${ph.label} (${sumDur(its)} דק׳) —`);
+        its.forEach(it => {
+            if (it.kind === 'rest') {
+                lines.push(`   ☁︎ מנוחה – ${it.duration} דק׳`);
+            } else {
+                n++;
+                const springs = it.springs && !/ללא/.test(it.springs) ? ` | קפיצים: ${it.springs}` : '';
+                lines.push(`${n}. ${it.name} – ${it.duration} דק׳${springs}`);
+            }
+            if (it.note) lines.push(`   📝 ${it.note}`);
+        });
     });
     lines.push('', '— EVERYDRAY');
     return lines.join('\n');
@@ -1188,11 +1515,8 @@ function copyText(text, okMsg) {
         ta.remove();
         toast(ok ? okMsg : 'לא הצלחתי להעתיק אוטומטית', ok ? {} : { type: 'warn' });
     };
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(() => toast(okMsg), fallback);
-    } else {
-        fallback();
-    }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => toast(okMsg), fallback);
+    else fallback();
 }
 const copyLessonText = lesson => copyText(lessonText(lesson), 'השיעור הועתק — אפשר להדביק בוואטסאפ או בפתקים 📋');
 
@@ -1203,6 +1527,7 @@ function eventTitle(e) {
     const l = getLesson(e.lessonId);
     return l ? l.title : (e.title || 'שיעור');
 }
+const typeClass = e => { const l = getLesson(e.lessonId); return l ? `t-${l.type}` : 't-none'; };
 const byTime = (a, b) => (a.time || '99:99').localeCompare(b.time || '99:99');
 function eventsByDate() {
     const map = {};
@@ -1210,12 +1535,15 @@ function eventsByDate() {
     Object.values(map).forEach(arr => arr.sort(byTime));
     return map;
 }
+function upcomingEvents(limit) {
+    const t = todayStr();
+    return state.events.filter(e => e.date >= t).sort((a, b) => (a.date + (a.time || '99:99')).localeCompare(b.date + (b.time || '99:99'))).slice(0, limit);
+}
 function eventClass(e) {
-    const classes = [];
-    if (e.done) classes.push('done');
-    if (!getLesson(e.lessonId)) classes.push('orphan');
-    if (e.date < todayStr()) classes.push('past');
-    return classes.join(' ');
+    const c = [typeClass(e)];
+    if (e.done) c.push('done');
+    if (e.date < todayStr()) c.push('past');
+    return c.join(' ');
 }
 
 function renderCalendar() {
@@ -1235,7 +1563,6 @@ function renderMonth(map) {
     const daysInMonth = new Date(y, m + 1, 0).getDate();
     const cells = Math.ceil((firstDow + daysInMonth) / 7) * 7;
     const today = todayStr();
-
     let html = DAYS_SHORT.map(d => `<div class="cal-dow">${d}</div>`).join('');
     for (let i = 0; i < cells; i++) {
         const d = new Date(y, m, 1 - firstDow + i);
@@ -1257,9 +1584,7 @@ function renderMonth(map) {
             </div>`;
     }
     $('#calBody').innerHTML = `<div class="cal-grid">${html}</div>`;
-
-    const monthEvents = state.events.filter(e => e.date.slice(0, 7) === ui.calCursor.slice(0, 7));
-    renderCalStats(monthEvents, 'החודש');
+    renderCalStats(state.events.filter(e => e.date.slice(0, 7) === ui.calCursor.slice(0, 7)), 'החודש');
 }
 
 function renderWeek(map) {
@@ -1267,11 +1592,11 @@ function renderWeek(map) {
     const start = new Date(sel.getFullYear(), sel.getMonth(), sel.getDate() - sel.getDay());
     const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
     $('#calTitle').textContent = start.getMonth() === end.getMonth()
-        ? `${start.getDate()}–${end.getDate()} ב${MONTHS[end.getMonth()]} ${end.getFullYear()}`
+        ? `${start.getDate()}–${end.getDate()} ב${MONTHS[end.getMonth()]}`
         : `${start.getDate()} ב${MONTHS[start.getMonth()]} – ${end.getDate()} ב${MONTHS[end.getMonth()]}`;
     const today = todayStr();
-    let html = '';
     const weekDates = [];
+    let html = '';
     for (let i = 0; i < 7; i++) {
         const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
         const ds = toDateStr(d);
@@ -1312,7 +1637,7 @@ function eventCardHtml(e) {
     const st = l ? lessonStats(l) : null;
     const id = esc(e.id);
     return `
-        <div class="event-card ${e.done ? 'done' : ''}">
+        <div class="event-card ${typeClass(e)} ${e.done ? 'done' : ''}">
             <div class="ec-top">
                 <span class="ec-time">${e.time || 'ללא שעה'}</span>
                 ${e.seriesId ? `<span class="pill">${icon('repeat', 12)}שבועי</span>` : ''}
@@ -1324,9 +1649,9 @@ function eventCardHtml(e) {
             <div class="ec-meta">${st ? `${st.total} דק׳ · ${st.exCount} תרגילים · ${esc(LESSON_TYPES[l.type])}` : 'השיעור המקורי נמחק מהארכיון'}${e.group ? ` · ${esc(e.group)}` : ''}</div>
             ${e.note ? `<div class="ec-note">📝 ${esc(e.note)}</div>` : ''}
             <div class="ec-actions">
-                ${l ? `<button class="btn sm" data-action="event-view" data-id="${id}">${icon('eye')}לשיעור</button>` : ''}
-                <button class="btn sm ${e.done ? 'success' : ''}" data-action="event-done" data-id="${id}">${e.done ? `${icon('check')}הועבר` : 'סימון כהועבר'}</button>
-                <a class="btn sm ghost" href="${esc(googleCalUrl(e))}" target="_blank" rel="noopener" title="הוספה ל-Google Calendar">${icon('link')}Google</a>
+                ${l ? `<button class="btn xs" data-action="event-view" data-id="${id}">${icon('eye')}לשיעור</button>` : ''}
+                <button class="btn xs ${e.done ? 'success' : ''}" data-action="event-done" data-id="${id}">${e.done ? `${icon('check')}הועבר` : 'סימון כהועבר'}</button>
+                <a class="btn xs ghost" href="${esc(googleCalUrl(e))}" target="_blank" rel="noopener" title="הוספה ל-Google Calendar">${icon('link')}Google</a>
             </div>
         </div>`;
 }
@@ -1345,8 +1670,8 @@ function renderDayPanel(map) {
 }
 
 function renderUpcoming() {
+    const list = upcomingEvents(8);
     const t = todayStr();
-    const list = state.events.filter(e => e.date >= t).sort((a, b) => (a.date + (a.time || '99:99')).localeCompare(b.date + (b.time || '99:99'))).slice(0, 8);
     if (!list.length) {
         $('#upcomingList').innerHTML = '<p class="day-empty">אין שיעורים קרובים בלוח.</p>';
         return;
@@ -1355,7 +1680,7 @@ function renderUpcoming() {
         const d = parseDate(e.date);
         const rel = relativeDay(e.date);
         return `
-            <button class="up-item ${e.date === t ? 'is-today' : ''}" data-action="select-day" data-date="${e.date}">
+            <button class="up-item ${typeClass(e)} ${e.date === t ? 'is-today' : ''}" data-action="select-day" data-date="${e.date}">
                 <span class="up-date"><b>${d.getDate()}</b><small>${MONTHS[d.getMonth()].slice(0, 3)}׳</small></span>
                 <span class="up-info">
                     <b>${esc(eventTitle(e))}</b>
@@ -1371,9 +1696,7 @@ function selectDay(ds) {
     if (monthStart(ds) !== ui.calCursor) ui.calCursor = monthStart(ds);
     if (ui.view !== 'calendar') setView('calendar');
     renderCalendar();
-    if (window.matchMedia('(max-width: 1024px)').matches) {
-        $('#dayPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+    if (isCompact()) $('#dayPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function calShift(dir) {
@@ -1382,8 +1705,7 @@ function calShift(dir) {
         ui.calCursor = monthStart(ui.selectedDate);
     } else {
         const c = parseDate(ui.calCursor);
-        const next = new Date(c.getFullYear(), c.getMonth() + dir, 1);
-        ui.calCursor = toDateStr(next);
+        ui.calCursor = toDateStr(new Date(c.getFullYear(), c.getMonth() + dir, 1));
         const t = todayStr();
         ui.selectedDate = monthStart(t) === ui.calCursor ? t : ui.calCursor;
     }
@@ -1496,15 +1818,12 @@ function eventRange(e) {
     const [h, mi] = e.time.split(':').map(Number);
     const d = parseDate(e.date);
     const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, mi);
-    const end = new Date(start.getTime() + eventDuration(e) * 60000);
-    return { start, end };
+    return { start, end: new Date(start.getTime() + eventDuration(e) * 60000) };
 }
 const icsLocal = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
 const icsDate = s => s.replace(/-/g, '');
-const icsEsc = s => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
-function eventSummary(e) {
-    return `${eventTitle(e)}${e.group ? ' · ' + e.group : ''}`;
-}
+const icsEsc = s => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+const eventSummary = e => `${eventTitle(e)}${e.group ? ' · ' + e.group : ''}`;
 function eventDescription(e) {
     const l = getLesson(e.lessonId);
     const parts = [];
@@ -1520,8 +1839,7 @@ function foldLine(line) {
     let len = 0;
     for (const ch of line) {
         const l = enc.encode(ch).length;
-        const limit = out.length ? 74 : 75;
-        if (len + l > limit) { out.push(cur); cur = ''; len = 0; }
+        if (len + l > (out.length ? 74 : 75)) { out.push(cur); cur = ''; len = 0; }
         cur += ch;
         len += l;
     }
@@ -1529,15 +1847,14 @@ function foldLine(line) {
     return out.join('\r\n ');
 }
 function googleCalUrl(e) {
-    const dates = e.time
-        ? (() => { const r = eventRange(e); return `${icsLocal(r.start)}/${icsLocal(r.end)}`; })()
-        : `${icsDate(e.date)}/${icsDate(addDays(e.date, 1))}`;
+    let dates;
+    if (e.time) { const r = eventRange(e); dates = `${icsLocal(r.start)}/${icsLocal(r.end)}`; }
+    else dates = `${icsDate(e.date)}/${icsDate(addDays(e.date, 1))}`;
     const p = new URLSearchParams({ action: 'TEMPLATE', text: eventSummary(e), dates, details: eventDescription(e) });
     return `https://calendar.google.com/calendar/render?${p.toString()}`;
 }
 function download(name, content, mime) {
-    const blob = new Blob([content], { type: mime });
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(new Blob([content], { type: mime }));
     const a = document.createElement('a');
     a.href = url;
     a.download = name;
@@ -1553,12 +1870,8 @@ function exportICS() {
     const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//EVERYDRAY//Pilates Planner//HE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:EVERYDRAY – שיעורי פילאטיס'];
     state.events.forEach(e => {
         lines.push('BEGIN:VEVENT', `UID:${e.id}@everydray.fit`, `DTSTAMP:${stamp}`);
-        if (e.time) {
-            const r = eventRange(e);
-            lines.push(`DTSTART:${icsLocal(r.start)}`, `DTEND:${icsLocal(r.end)}`);
-        } else {
-            lines.push(`DTSTART;VALUE=DATE:${icsDate(e.date)}`, `DTEND;VALUE=DATE:${icsDate(addDays(e.date, 1))}`);
-        }
+        if (e.time) { const r = eventRange(e); lines.push(`DTSTART:${icsLocal(r.start)}`, `DTEND:${icsLocal(r.end)}`); }
+        else lines.push(`DTSTART;VALUE=DATE:${icsDate(e.date)}`, `DTEND;VALUE=DATE:${icsDate(addDays(e.date, 1))}`);
         lines.push(`SUMMARY:${icsEsc(eventSummary(e))}`, `DESCRIPTION:${icsEsc(eventDescription(e))}`, 'END:VEVENT');
     });
     lines.push('END:VCALENDAR');
@@ -1568,7 +1881,7 @@ function exportICS() {
 
 /* ---------- גיבוי ---------- */
 function exportBackup() {
-    const data = { app: 'everydray', version: 2, exportedAt: new Date().toISOString(), lessons: state.lessons, events: state.events, customExercises: state.customExercises, favorites: state.favorites };
+    const data = { app: 'everydray', version: 3, exportedAt: new Date().toISOString(), lessons: state.lessons, events: state.events, customExercises: state.customExercises, favorites: state.favorites };
     download(`everydray-backup-${todayStr()}.json`, JSON.stringify(data, null, 2), 'application/json');
     toast('קובץ הגיבוי ירד 💾 שמרי אותו במקום בטוח');
 }
@@ -1589,10 +1902,7 @@ function importBackup(file) {
         const newLessons = incoming.lessons.filter(l => !lessonIds.has(l.id));
         const newEvents = incoming.events.filter(e => !eventIds.has(e.id));
         const newEx = incoming.customExercises.filter(e => !exIds.has(e.id));
-        if (!newLessons.length && !newEvents.length && !newEx.length) {
-            toast('כל הנתונים שבקובץ כבר קיימים כאן ✓');
-            return;
-        }
+        if (!newLessons.length && !newEvents.length && !newEx.length) { toast('כל הנתונים שבקובץ כבר קיימים כאן ✓'); return; }
         const ok = await confirmDialog({
             title: 'ייבוא גיבוי',
             message: `נמצאו בקובץ <b>${newLessons.length}</b> שיעורים, <b>${newEvents.length}</b> שיבוצים ו-<b>${newEx.length}</b> תרגילים שעוד לא קיימים כאן.<br>הם יתווספו לנתונים הקיימים — שום דבר לא יימחק.`,
@@ -1714,6 +2024,22 @@ function toast(msg, { type = 'info', action = null, timeout = 3200, key = null }
     setTimeout(remove, timeout);
 }
 
+function renderHero() {
+    const h = new Date().getHours();
+    const greet = h >= 5 && h < 12 ? 'בוקר טוב' : h >= 12 && h < 17 ? 'צהריים טובים' : h >= 17 && h < 22 ? 'ערב טוב' : 'לילה טוב';
+    $('#heroGreeting').textContent = `${greet} 🌸`;
+    const t = todayStr();
+    const d = parseDate(t);
+    const ws = toDateStr(new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay()));
+    const we = addDays(ws, 6);
+    const week = state.events.filter(e => e.date >= ws && e.date <= we).length;
+    const next = upcomingEvents(1)[0];
+    $('#heroStats').innerHTML = `
+        <button class="stat-pill" data-action="nav" data-view="lessons"><span class="stat-ico">${icon('book', 15)}</span><span><b>${state.lessons.length}</b> ${state.lessons.length === 1 ? 'שיעור שמור' : 'שיעורים שמורים'}</span></button>
+        <button class="stat-pill" data-action="nav" data-view="calendar"><span class="stat-ico">${icon('calendar', 15)}</span><span><b>${week}</b> ${week === 1 ? 'שיעור' : 'שיעורים'} השבוע</span></button>
+        ${next ? `<button class="stat-pill accent" data-action="select-day" data-date="${next.date}"><span class="stat-ico">${icon('clock', 15)}</span><span>הבא: <b>${relativeDay(next.date) || formatDateShort(next.date)}${next.time ? ' · ' + next.time : ''}</b> · ${esc(eventTitle(next))}</span></button>` : ''}`;
+}
+
 function setView(v) {
     if (!VIEWS.includes(v)) v = 'builder';
     const changed = ui.view !== v;
@@ -1729,6 +2055,7 @@ function setView(v) {
     });
     if (v === 'lessons') renderLessons();
     if (v === 'calendar') renderCalendar();
+    if (v === 'builder') renderHero();
     if (changed) window.scrollTo({ top: 0 });
 }
 
@@ -1745,6 +2072,7 @@ function setPane(p) {
 
 function renderAll() {
     $('#lessonsCount').textContent = state.lessons.length;
+    renderHero();
     renderLibrary();
     renderBuilder();
     renderLessons();
@@ -1760,8 +2088,7 @@ const actions = {
     'toggle-ex': el => {
         const id = el.dataset.id;
         if (ui.expanded.has(id)) ui.expanded.delete(id); else ui.expanded.add(id);
-        const card = el.closest('.ex-card');
-        card.classList.toggle('open', ui.expanded.has(id));
+        el.closest('.ex-card').classList.toggle('open', ui.expanded.has(id));
         el.setAttribute('aria-expanded', ui.expanded.has(id));
     },
     'add-ex': el => addExerciseToLesson(el.dataset.id),
@@ -1776,15 +2103,18 @@ const actions = {
     'dur-dec': el => changeDuration(el.dataset.uid, -1),
     'move-up': el => moveItem(el.dataset.uid, -1),
     'move-down': el => moveItem(el.dataset.uid, 1),
-    'toggle-note': el => {
+    'toggle-more': el => {
         const u = el.dataset.uid;
-        if (ui.openNotes.has(u)) ui.openNotes.delete(u); else ui.openNotes.add(u);
+        if (ui.openMore.has(u)) ui.openMore.delete(u); else ui.openMore.add(u);
         renderBuilder();
         const input = document.querySelector(`.item-note[data-uid="${CSS.escape(u)}"]`);
-        if (input) input.focus();
+        if (input && !isCompact()) input.focus();
     },
+    'set-phase': el => setItemPhase(el.dataset.uid, el.dataset.phase),
+    'swap-item': el => swapItem(el.dataset.uid),
+    'dup-item': el => duplicateItem(el.dataset.uid),
     'remove-item': el => removeItem(el.dataset.uid),
-    'toggle-notes': () => { $('#lessonNotes').hidden = false; $('#notesToggle').hidden = true; $('#lessonNotes').focus(); },
+    'toggle-notes': () => { const n = $('#lessonNotes'); n.hidden = !n.hidden; if (!n.hidden) n.focus(); },
     'open-draft': () => openDraftModal(),
     'clear-lesson': () => clearLesson(),
     'new-lesson': () => newLesson(),
@@ -1822,10 +2152,7 @@ function bindEvents() {
     });
 
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && modalStack.length) {
-            modalStack[modalStack.length - 1].close();
-            return;
-        }
+        if (e.key === 'Escape' && modalStack.length) { modalStack[modalStack.length - 1].close(); return; }
         const el = e.target;
         if ((e.key === 'Enter' || e.key === ' ') && el.matches && el.matches('[role="button"][data-action]')) {
             e.preventDefault();
@@ -1848,20 +2175,14 @@ function bindEvents() {
             builder.title = t.value;
             builder.dirty = true;
             save();
-            renderBuilderStatusOnly();
+            $('#lessonStatus').innerHTML = statusHtml();
         } else if (t.id === 'lessonNotes') {
             builder.notes = t.value;
             builder.dirty = true;
             save();
         } else if (t.classList.contains('item-note')) {
             const it = getItem(t.dataset.uid);
-            if (it) {
-                it.note = t.value;
-                builder.dirty = true;
-                save();
-                const btn = document.querySelector(`[data-action="toggle-note"][data-uid="${CSS.escape(t.dataset.uid)}"]`);
-                if (btn) btn.classList.toggle('has-note', !!t.value);
-            }
+            if (it) { it.note = t.value; builder.dirty = true; save(); }
         } else if (t.id === 'lessonsSearch') {
             ui.lessonsSearch = t.value;
             renderLessons();
@@ -1873,21 +2194,16 @@ function bindEvents() {
         if (t.id === 'lessonLevel') { builder.level = t.value; commitBuilder({ library: false }); }
         else if (t.id === 'lessonType') { builder.type = t.value; commitBuilder({ library: false }); }
         else if (t.id === 'lessonTarget') { builder.target = Number(t.value) || 50; commitBuilder({ library: false }); }
+        else if (t.id === 'levelFilter') { ui.level = t.value; renderLibrary(); }
+        else if (t.id === 'focusFilter') { ui.focus = t.value; renderLibrary(); }
         else if (t.id === 'lessonsSort') { ui.lessonsSort = t.value; renderLessons(); }
         else if (t.id === 'importFile') { importBackup(t.files && t.files[0]); t.value = ''; }
-        else if (t.id === 'lessonNotes' && !t.value.trim()) { t.hidden = true; $('#notesToggle').hidden = false; }
+        else if (t.id === 'lessonNotes' && !t.value.trim()) { t.hidden = true; }
     });
 
     window.addEventListener('storage', e => {
         if (e.key === STORAGE_KEY) toast('הנתונים עודכנו בלשונית אחרת — רענני את הדף כדי לראות את הגרסה העדכנית', { timeout: 6000 });
     });
-}
-
-function renderBuilderStatusOnly() {
-    const editing = builder.editingId ? getLesson(builder.editingId) : null;
-    let status = editing ? `<span class="pill gold">${icon('pen', 13)}עריכת שיעור שמור</span>` : '<span class="pill">שיעור חדש</span>';
-    if (builder.dirty && builder.items.length) status += '<span class="unsaved-dot" aria-hidden="true"></span><span>שינויים שלא נשמרו</span>';
-    $('#lessonStatus').innerHTML = status;
 }
 
 /* =========================================================
@@ -1898,11 +2214,14 @@ function init() {
     $('#lessonLevel').innerHTML = LEVELS.map(l => `<option value="${esc(l)}">${esc(l)}</option>`).join('');
     $('#lessonType').innerHTML = Object.keys(LESSON_TYPES).map(k => `<option value="${k}">${LESSON_TYPES[k]}</option>`).join('');
     $('#lessonTarget').innerHTML = TARGETS.map(t => `<option value="${t}">${t} דק׳</option>`).join('');
+    $('#levelFilter').innerHTML = `<option value="all">כל הרמות</option>` + EX_LEVELS.map(l => `<option value="${l}">${l}</option>`).join('');
+    $('#focusFilter').innerHTML = `<option value="all">כל אזורי הגוף</option>` + FOCUS_AREAS.map(f => `<option value="${f}">${f}</option>`).join('');
     $('#lessonsSort').value = ui.lessonsSort;
 
     syncBuilderInputs();
     bindEvents();
-    setupDragAndDrop();
+    setupSorting();
+    setupLibraryDrop();
     renderAll();
     setView(ui.view);
     save();
