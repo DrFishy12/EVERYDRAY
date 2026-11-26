@@ -1193,16 +1193,22 @@ function generateDraft({ type, target, withRest, level, focus }) {
 
 const isAutoTitle = t => { const s = String(t || '').trim(); return !s || s === DEFAULT_TITLE || /^שיעור (מזרן|רפורמר|משולב) · \d+ דק׳$/.test(s); };
 
-function applyDraft(opts) {
-    const items = generateDraft(opts);
-    if (!items.length) { toast('לא נמצאו מספיק תרגילים במאגר לטיוטה כזו', { type: 'warn' }); return; }
-    Object.assign(builder, { items, type: opts.type, target: opts.target, level: opts.level, editingId: null });
+/* מכניס רשימת פריטים מוכנה (טיוטה) לבונה השיעורים – משמש גם את צ'אט ה-AI */
+function applyDraftItems(items, opts) {
+    Object.assign(builder, { items: normalizePhases(items), type: LESSON_TYPES[opts.type] ? opts.type : builder.type, target: Number(opts.target) || builder.target, level: LEVELS.includes(opts.level) ? opts.level : builder.level, editingId: null });
     if (opts.focus && !builder.notes.trim()) builder.notes = `פוקוס: ${opts.focus}`;
-    if (isAutoTitle(builder.title)) builder.title = `שיעור ${LESSON_TYPES[opts.type]} · ${opts.target} דק׳`;
+    if (isAutoTitle(builder.title)) builder.title = `שיעור ${LESSON_TYPES[builder.type]} · ${builder.target} דק׳`;
     ui.openMore.clear();
     syncBuilderInputs();
     commitBuilder();
+    if (ui.view !== 'builder') setView('builder');
     setPane('lesson');
+}
+
+function applyDraft(opts) {
+    const items = generateDraft(opts);
+    if (!items.length) { toast('לא נמצאו מספיק תרגילים במאגר לטיוטה כזו', { type: 'warn' }); return; }
+    applyDraftItems(items, opts);
     toast('הטיוטה מוכנה! עכשיו אפשר להחליף, להזיז ולהתאים 🌸', { action: { label: 'טיוטה אחרת', fn: () => applyDraft(opts) }, timeout: 6000 });
 }
 
