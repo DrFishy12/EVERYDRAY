@@ -1034,3 +1034,91 @@ body.modal-open { overflow: hidden; }
     .cat-bubble .ico { width: 17px; height: 17px; }
     .add-btn { width: 36px; height: 36px; }
 }
+
+/* ---------- exercise detail: demo, video, how-to ---------- */
+.ex-detail { display: grid; grid-template-columns: minmax(0, 230px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.ex-detail.in-modal { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); }
+.ex-visual { display: grid; gap: 8px; position: sticky; top: 0; }
+.demo-card {
+    position: relative;
+    border-radius: 18px;
+    background: linear-gradient(160deg, #FFF8FA 0%, #F9ECF1 100%);
+    border: 1px solid #F3DDE5;
+    padding: 6px 6px 2px;
+    overflow: hidden;
+}
+.demo { width: 100%; aspect-ratio: 2 / 1; }
+.demo svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.demo-label {
+    position: absolute;
+    top: 7px;
+    inset-inline-start: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--primary);
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    padding: 1px 8px;
+}
+.demo-label .ico { width: 11px; height: 11px; }
+.video-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.video-row .link-btn { font-size: 0.78rem; }
+.video-embed { border-radius: 14px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; }
+.video-embed iframe { width: 100%; height: 100%; border: 0; display: block; }
+.ex-text { display: grid; gap: 10px; min-width: 0; }
+.ex-block h5 { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.03em; color: var(--primary); margin-bottom: 4px; text-transform: none; }
+.ex-block p { color: var(--ink-2); line-height: 1.65; font-size: 0.88rem; }
+.ex-steps { padding: 0; margin: 0; list-style: none; counter-reset: step; display: grid; gap: 6px; }
+.ex-steps li { counter-increment: step; position: relative; padding-inline-start: 30px; color: var(--ink); line-height: 1.6; font-size: 0.88rem; }
+.ex-steps li::before {
+    content: counter(step);
+    position: absolute;
+    inset-inline-start: 0;
+    top: 1px;
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    background: var(--grad);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+}
+.ex-reps { display: inline-flex; align-items: center; gap: 6px; font-size: 0.84rem; color: var(--ink-2); background: var(--gold-soft); border-radius: 999px; padding: 4px 12px; justify-self: start; }
+.ex-reps .ico { color: var(--gold-dark); }
+.ex-reps b { color: var(--gold-dark); }
+.ex-block ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.ex-block ul li { position: relative; padding-inline-start: 18px; font-size: 0.86rem; line-height: 1.55; color: var(--ink-2); }
+.ex-block.tips { background: var(--primary-soft); border-radius: 14px; padding: 10px 12px; }
+.ex-block.tips ul li::before { content: '✓'; position: absolute; inset-inline-start: 0; color: var(--primary); font-weight: 800; }
+.ex-block.tips ul li { color: #6E3550; font-weight: 600; }
+.ex-block.mistakes { background: #FDF3EE; border-radius: 14px; padding: 10px 12px; }
+.ex-block.mistakes h5 { color: #B0633A; }
+.ex-block.mistakes ul li::before { content: '✕'; position: absolute; inset-inline-start: 0; color: #C9784C; font-weight: 800; font-size: 0.8rem; top: 1px; }
+.ex-mods { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mod { border-radius: 14px; padding: 8px 12px; font-size: 0.84rem; line-height: 1.5; display: grid; gap: 2px; color: var(--ink-2); }
+.mod b { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.03em; }
+.mod.easy { background: var(--success-soft); }
+.mod.easy b { color: #3B7558; }
+.mod.hard { background: var(--cat-reformer-bg); }
+.mod.hard b { color: var(--cat-reformer); }
+.sl-steps { margin: 2px 0 0; padding-inline-start: 18px; font-size: 0.85rem; color: var(--ink-2); line-height: 1.55; display: grid; gap: 2px; }
+.sl-reps { font-size: 0.8rem; color: var(--gold-dark); font-weight: 700; }
+.modal .ex-detail { margin-top: -2px; }
+
+@media (max-width: 1240px) {
+    .ex-card .ex-detail { grid-template-columns: 1fr; }
+    .ex-card .ex-visual { position: static; max-width: 360px; }
+}
+@media (max-width: 640px) {
+    .ex-detail, .ex-detail.in-modal { grid-template-columns: 1fr; }
+    .ex-visual { position: static; }
+    .ex-mods { grid-template-columns: 1fr; }
+}
+@media print {
+    .sl-steps { font-size: 10pt; }
+}

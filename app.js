@@ -77,6 +77,8 @@ const ICONS = {
     more: '<g fill="currentColor" stroke="none"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></g>',
     swap: '<path d="M4 8h13l-3.5-3.5"/><path d="M20 16H7l3.5 3.5"/>',
     clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    play: '<path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/>',
+    film: '<rect x="3.5" y="5" width="17" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor" stroke="none"/>',
     sun: '<circle cx="12" cy="12" r="3.6"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"/>',
     mat: '<circle cx="6.5" cy="9" r="2.2"/><path d="M9.2 10.8l4.3 1.4 3.8-3.9"/><path d="M3 15.5h18"/><path d="M5 18.8h14" opacity=".45"/>',
     reformer: '<path d="M3 16h18"/><path d="M5 16v3.5M19 16v3.5"/><rect x="7.5" y="12" width="6.5" height="4" rx="1.2"/><path d="M18 16V9"/><path d="M16.3 9h3.4"/>',
@@ -165,7 +167,7 @@ function relativeDay(s) {
    נתונים ושמירה
    ========================================================= */
 function defaultState() {
-    return { version: 3, lessons: [], events: [], customExercises: [], favorites: [], draft: null, prefs: { view: 'builder', calMode: 'month', lastTime: '18:00', lastGroup: '' } };
+    return { version: 3, lessons: [], events: [], customExercises: [], favorites: [], videoOverrides: {}, draft: null, prefs: { view: 'builder', calMode: 'month', lastTime: '18:00', lastGroup: '' } };
 }
 
 function normalizeItem(it) {
@@ -288,6 +290,9 @@ function normalizeState(s) {
     out.events = Array.isArray(s.events) ? s.events.filter(e => e && DATE_RE.test(e.date || '')).map(normalizeEvent) : [];
     out.customExercises = Array.isArray(s.customExercises) ? s.customExercises.filter(e => e && e.name).map(normalizeCustom) : [];
     out.favorites = Array.isArray(s.favorites) ? [...new Set(s.favorites.map(String))] : [];
+    if (s.videoOverrides && typeof s.videoOverrides === 'object') {
+        Object.keys(s.videoOverrides).forEach(k => { const u = safeUrl(s.videoOverrides[k]); if (u) out.videoOverrides[String(k)] = u; });
+    }
     out.draft = s.draft && typeof s.draft === 'object' ? s.draft : null;
     if (s.prefs && typeof s.prefs === 'object') Object.assign(out.prefs, s.prefs);
     return out;
@@ -407,8 +412,154 @@ function filteredLibrary() {
         if (ui.level !== 'all' && ex.level !== ui.level) return false;
         if (ui.focus !== 'all' && !(ex.focus || []).includes(ui.focus)) return false;
         if (!q) return true;
-        return [ex.name, ex.target, ex.description, ex.tips, ex.muscles, ex.springs, ex.equipment, ex.category, ex.level, (ex.focus || []).join(' ')]
-            .some(f => String(f || '').toLowerCase().includes(q));
+        return exSearchText(ex).includes(q);
+    });
+}
+
+/* ---------- פרטי תרגיל: הסבר מלא, הדמיה וסרטון ---------- */
+const asList = v => (Array.isArray(v) ? v.filter(Boolean).map(String) : (v ? [String(v).replace(/^דגש:\s*/, '')] : []));
+const exTips = ex => asList(ex && ex.tips);
+function exDescription(ex) {
+    if (!ex) return '';
+    if (ex.steps && ex.steps.length) return [ex.setup].concat(ex.steps).filter(Boolean).join(' ');
+    return ex.description || '';
+}
+const SEARCH_CACHE = new Map();
+function exSearchText(ex) {
+    if (!ex.custom && SEARCH_CACHE.has(ex.id)) return SEARCH_CACHE.get(ex.id);
+    const t = [ex.name, ex.target, exDescription(ex), exTips(ex).join(' '), asList(ex.mistakes).join(' '), ex.muscles, ex.springs, ex.equipment, ex.category, ex.level, (ex.focus || []).join(' ')]
+        .join(' ').toLowerCase();
+    if (!ex.custom) SEARCH_CACHE.set(ex.id, t);
+    return t;
+}
+const exVideo = ex => safeUrl(state.videoOverrides[String(ex.id)]) || safeUrl(ex.video) || safeUrl(ex.videoUrl) || '';
+function videoSearchUrl(ex) {
+    const nm = splitName(ex.name);
+    const eq = ex.equipment || '';
+    const where = /רפורמר/.test(eq) ? 'reformer' : /צ׳ר|צ'ר/.test(eq) ? 'wunda chair' : /קדילאק|טאואר/.test(eq) ? 'cadillac' : /בארל|קורקטור/.test(eq) ? 'barrel' : needsProps(ex) ? '' : 'mat';
+    const q = `${nm.en || nm.he} pilates ${where} exercise`.replace(/\s+/g, ' ').trim();
+    return `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+}
+function youTubeId(url) {
+    const m = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/.exec(url || '');
+    return m ? m[1] : null;
+}
+const hasDemo = ex => !!(ex && ex.demo && window.EverydrayDemos && window.EverydrayDemos.has(ex.demo));
+const mountDemos = root => { if (window.EverydrayDemos && root) window.EverydrayDemos.mount(root); };
+
+function exerciseDetailHtml(ex, { modal = false } = {}) {
+    const id = esc(String(ex.id));
+    const steps = asList(ex.steps);
+    const tips = exTips(ex);
+    const mistakes = asList(ex.mistakes);
+    const video = exVideo(ex);
+    const ytId = youTubeId(video);
+    const videoBtn = ytId
+        ? `<button class="btn xs primary" data-action="play-video" data-id="${id}">${icon('play', 13)}צפייה בסרטון</button>`
+        : video
+            ? `<a class="btn xs primary" href="${esc(video)}" target="_blank" rel="noopener">${icon('play', 13)}צפייה בסרטון</a>`
+            : `<a class="btn xs soft" href="${esc(videoSearchUrl(ex))}" target="_blank" rel="noopener" title="חיפוש סרטוני הדגמה ב-YouTube">${icon('film', 14)}סרטוני הדגמה</a>`;
+    return `
+    <div class="ex-detail ${modal ? 'in-modal' : ''}" data-ex-id="${id}">
+        <div class="ex-visual">
+            ${hasDemo(ex) ? `<div class="demo-card"><div class="demo" data-demo="${esc(ex.demo)}"></div><span class="demo-label">${icon('sparkle', 12)}הדמיית תנועה</span></div>` : ''}
+            <div class="video-row">
+                ${videoBtn}
+                <button class="link-btn" data-action="set-video" data-id="${id}">${video ? 'החלפת סרטון' : 'קישור לסרטון משלך'}</button>
+            </div>
+            <div class="video-embed" hidden></div>
+        </div>
+        <div class="ex-text">
+            ${ex.setup ? `<section class="ex-block"><h5>תנוחת מוצא</h5><p>${esc(ex.setup)}</p></section>` : ''}
+            ${steps.length
+                ? `<section class="ex-block"><h5>ביצוע</h5><ol class="ex-steps">${steps.map(t => `<li>${esc(t)}</li>`).join('')}</ol></section>`
+                : ex.description ? `<section class="ex-block"><h5>ביצוע</h5><p>${esc(ex.description)}</p></section>` : ''}
+            ${ex.reps ? `<p class="ex-reps">${icon('repeat', 14)}<b>חזרות:</b> ${esc(ex.reps)}</p>` : ''}
+            ${tips.length ? `<section class="ex-block tips"><h5>דגשים להדרכה</h5><ul>${tips.map(t => `<li>${esc(t)}</li>`).join('')}</ul></section>` : ''}
+            ${mistakes.length ? `<section class="ex-block mistakes"><h5>טעויות נפוצות</h5><ul>${mistakes.map(t => `<li>${esc(t)}</li>`).join('')}</ul></section>` : ''}
+            ${ex.easier || ex.harder ? `<div class="ex-mods">${ex.easier ? `<div class="mod easy"><b>הקלה</b><span>${esc(ex.easier)}</span></div>` : ''}${ex.harder ? `<div class="mod hard"><b>התקדמות</b><span>${esc(ex.harder)}</span></div>` : ''}</div>` : ''}
+            ${ex.muscles ? `<p class="ex-muscles"><b>שרירים עובדים:</b> ${esc(ex.muscles)}</p>` : ''}
+            <div class="ex-meta">
+                <span class="pill tag cat-${catKey(ex.category)}">${esc(catLabel(ex.category))}</span>
+                <span class="pill">${esc(ex.level || '')}</span>
+                <span class="pill">${icon('clock', 13)}${ex.duration} דק׳</span>
+                ${ex.springs && !/ללא/.test(ex.springs) ? `<span class="pill springs">קפיצים: ${esc(ex.springs)}</span>` : ''}
+                ${ex.equipment ? `<span class="pill">${esc(ex.equipment)}</span>` : ''}
+                ${(ex.focus || []).map(f => `<span class="pill rose">${esc(f)}</span>`).join('')}
+            </div>
+            ${ex.custom ? `<div class="ex-own-actions">
+                <button class="btn xs" data-action="edit-custom" data-id="${id}">${icon('pen')}עריכה</button>
+                <button class="btn xs ghost" data-action="delete-custom" data-id="${id}">${icon('trash')}מחיקה</button>
+            </div>` : ''}
+        </div>
+    </div>`;
+}
+
+function refreshExerciseDetails(id) {
+    const ex = findExercise(id);
+    if (!ex) return;
+    document.querySelectorAll(`.ex-detail[data-ex-id="${CSS.escape(String(id))}"]`).forEach(d => {
+        const holder = document.createElement('div');
+        holder.innerHTML = exerciseDetailHtml(ex, { modal: d.classList.contains('in-modal') });
+        const fresh = holder.firstElementChild;
+        d.replaceWith(fresh);
+        mountDemos(fresh);
+    });
+}
+
+function openExerciseModal(id) {
+    const ex = findExercise(id);
+    if (!ex) return;
+    const m = openModal({
+        title: ex.name,
+        body: exerciseDetailHtml(ex, { modal: true }),
+        size: 'wide',
+        actions: [
+            { label: 'הוספה לשיעור', icon: 'plus', className: 'btn primary', onClick: () => { addExerciseToLesson(ex.id); toast(`נוסף לשיעור: ${splitName(ex.name).he}`, { key: 'added' }); } },
+            { label: 'סגירה', className: 'btn ghost' }
+        ]
+    });
+    mountDemos(m.el);
+}
+
+function playVideo(el) {
+    const ex = findExercise(el.dataset.id);
+    const vid = ex && youTubeId(exVideo(ex));
+    const box = el.closest('.ex-visual') && el.closest('.ex-visual').querySelector('.video-embed');
+    if (!vid || !box) return;
+    if (!box.hidden) { box.hidden = true; box.innerHTML = ''; return; }
+    box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vid}?rel=0&autoplay=1" title="סרטון הדגמה" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+    box.hidden = false;
+}
+
+function setVideo(id) {
+    const ex = findExercise(id);
+    if (!ex) return;
+    const key = String(id);
+    const cur = state.videoOverrides[key] || '';
+    const apply = v => {
+        if (v) state.videoOverrides[key] = v; else delete state.videoOverrides[key];
+        save();
+        refreshExerciseDetails(id);
+    };
+    const actionsList = [{
+        label: 'שמירה', className: 'btn primary', onClick: m => {
+            const v = m.el.querySelector('#vidUrl').value.trim();
+            if (v && !safeUrl(v)) { toast('הקישור צריך להתחיל ב-https://', { type: 'warn' }); return false; }
+            apply(v);
+            toast(v ? 'הסרטון נשמר לתרגיל 🎬' : 'הקישור הוסר');
+            return true;
+        }
+    }];
+    if (cur) actionsList.push({ label: 'הסרת הקישור', className: 'btn ghost', onClick: () => { apply(''); toast('הקישור הוסר — יוצגו שוב סרטוני הדגמה מ-YouTube'); } });
+    actionsList.push({ label: 'ביטול', className: 'btn ghost' });
+    openModal({
+        title: 'סרטון הדגמה לתרגיל',
+        body: `
+            <p class="muted">הדביקי קישור לסרטון שאת אוהבת להראות למתאמנות (YouTube, Instagram, Vimeo…). סרטוני YouTube יוצגו ישירות כאן באתר. הקישור נשמר במכשיר הזה ונכלל בקובץ הגיבוי.</p>
+            <label class="field"><span>${esc(ex.name)}</span><input class="input" id="vidUrl" type="url" dir="ltr" value="${esc(cur)}" placeholder="https://www.youtube.com/watch?v=…"></label>
+            <a class="link-btn" href="${esc(videoSearchUrl(ex))}" target="_blank" rel="noopener">${icon('search', 14)}חיפוש סרטונים מתאימים ב-YouTube</a>`,
+        actions: actionsList
     });
 }
 
@@ -439,23 +590,7 @@ function exerciseCardHtml(ex, counts) {
                 <button class="add-btn" data-action="add-ex" data-id="${esc(id)}" aria-label="הוספת ${esc(nm.he)} לשיעור" title="הוספה לשיעור">${icon('plus', 18)}</button>
             </div>
         </div>
-        <div class="ex-details">
-            ${ex.description ? `<p class="ex-desc">${esc(ex.description)}</p>` : ''}
-            ${ex.tips ? `<p class="ex-tips">${esc(ex.tips)}</p>` : ''}
-            ${ex.muscles ? `<p class="ex-muscles"><b>שרירים עובדים:</b> ${esc(ex.muscles)}</p>` : ''}
-            <div class="ex-meta">
-                <span class="pill tag">${esc(catLabel(ex.category))}</span>
-                <span class="pill">${esc(ex.level || '')}</span>
-                ${ex.springs && !/ללא/.test(ex.springs) ? `<span class="pill springs">קפיצים: ${esc(ex.springs)}</span>` : ''}
-                ${ex.equipment ? `<span class="pill">${esc(ex.equipment)}</span>` : ''}
-                ${(ex.focus || []).map(f => `<span class="pill rose">${esc(f)}</span>`).join('')}
-                ${safeUrl(ex.videoUrl) ? `<a href="${esc(safeUrl(ex.videoUrl))}" target="_blank" rel="noopener">צפייה בסרטון הסבר 📺</a>` : ''}
-            </div>
-            ${ex.custom ? `<div class="ex-own-actions">
-                <button class="btn xs" data-action="edit-custom" data-id="${esc(id)}">${icon('pen')}עריכה</button>
-                <button class="btn xs ghost" data-action="delete-custom" data-id="${esc(id)}">${icon('trash')}מחיקה</button>
-            </div>` : ''}
-        </div>
+        <div class="ex-details">${open ? exerciseDetailHtml(ex) : ''}</div>
     </article>`;
 }
 
@@ -481,6 +616,7 @@ function renderLibrary() {
         return;
     }
     el.innerHTML = list.map(ex => exerciseCardHtml(ex, counts)).join('');
+    mountDemos(el);
 }
 
 function toggleFav(id) {
@@ -583,15 +719,18 @@ async function deleteCustomExercise(id) {
 function makeItemFromExercise(ex) {
     return normalizeItem({
         uid: uid('it'), kind: 'exercise', exId: String(ex.id), name: ex.name, category: ex.category, target: ex.target,
-        duration: ex.duration, springs: ex.springs, equipment: ex.equipment, description: ex.description, tips: ex.tips, muscles: ex.muscles,
+        duration: ex.duration, springs: ex.springs, equipment: ex.equipment, description: exDescription(ex), tips: exTips(ex).join(' · '), muscles: ex.muscles,
         phase: defaultPhase(ex.category)
     });
 }
 function itemInfo(it) {
     if (it.kind === 'rest') return it;
     const ex = findExercise(it.exId);
-    if (!ex) return it;
-    return Object.assign({}, it, { description: ex.description || it.description, tips: ex.tips || it.tips, muscles: ex.muscles || it.muscles, videoUrl: ex.videoUrl });
+    if (!ex) return Object.assign({}, it, { stepsList: [], tipsList: asList(it.tips) });
+    return Object.assign({}, it, {
+        description: exDescription(ex) || it.description, setup: ex.setup || '', stepsList: asList(ex.steps),
+        tipsList: exTips(ex), reps: ex.reps || '', muscles: ex.muscles || it.muscles
+    });
 }
 const getItem = u => builder.items.find(it => it.uid === u);
 const itemIndex = u => builder.items.findIndex(it => it.uid === u);
@@ -844,6 +983,7 @@ function itemHtml(it, i, start, num) {
                 <span class="more-label">חלק בשיעור:</span>
                 <div class="seg mini">${PHASES.map(p => `<button type="button" class="${p.key === it.phase ? 'active' : ''}" data-action="set-phase" data-uid="${u}" data-phase="${p.key}">${p.short}</button>`).join('')}</div>
                 <span class="spacer"></span>
+                ${!isRest && findExercise(it.exId) ? `<button class="btn xs" data-action="ex-info" data-id="${esc(it.exId)}">${icon('eye')}איך עושים?</button>` : ''}
                 ${!isRest ? `<button class="btn xs soft" data-action="swap-item" data-uid="${u}">${icon('swap')}החלפה בתרגיל דומה</button>` : ''}
                 <button class="btn xs ghost" data-action="dup-item" data-uid="${u}">${icon('copy')}שכפול</button>
             </div>
@@ -1426,8 +1566,10 @@ function lessonSheetHtml(lesson, { full = true } = {}) {
                 <li class="cat-${catKey(it.category)}">
                     <div class="sl-head"><span class="sl-name"><span class="num">${n}.</span>${esc(nm.he)}${nm.en ? `<span class="nm-en">${esc(nm.en)}</span>` : ''}</span><span class="sl-time">${range}</span></div>
                     ${springs || equipment ? `<div class="sl-meta">${springs}${equipment}</div>` : ''}
-                    ${full && it.description ? `<p class="sl-desc">${esc(it.description)}</p>` : ''}
-                    ${it.tips ? `<p class="sl-tips">${esc(it.tips)}</p>` : ''}
+                    ${full && it.setup ? `<p class="sl-desc"><b>תנוחת מוצא:</b> ${esc(it.setup)}</p>` : ''}
+                    ${full && it.stepsList.length ? `<ol class="sl-steps">${it.stepsList.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : (full && it.description ? `<p class="sl-desc">${esc(it.description)}</p>` : '')}
+                    ${it.reps ? `<p class="sl-reps">חזרות: ${esc(it.reps)}</p>` : ''}
+                    ${it.tipsList.length ? `<p class="sl-tips">${esc((full ? it.tipsList : it.tipsList.slice(0, 2)).join(' · '))}</p>` : ''}
                     ${it.note ? `<p class="sl-note">📝 ${esc(it.note)}</p>` : ''}
                 </li>`;
         }).join('');
@@ -1881,7 +2023,7 @@ function exportICS() {
 
 /* ---------- גיבוי ---------- */
 function exportBackup() {
-    const data = { app: 'everydray', version: 3, exportedAt: new Date().toISOString(), lessons: state.lessons, events: state.events, customExercises: state.customExercises, favorites: state.favorites };
+    const data = { app: 'everydray', version: 3, exportedAt: new Date().toISOString(), lessons: state.lessons, events: state.events, customExercises: state.customExercises, favorites: state.favorites, videoOverrides: state.videoOverrides };
     download(`everydray-backup-${todayStr()}.json`, JSON.stringify(data, null, 2), 'application/json');
     toast('קובץ הגיבוי ירד 💾 שמרי אותו במקום בטוח');
 }
@@ -1913,6 +2055,7 @@ function importBackup(file) {
         state.events.push(...newEvents);
         state.customExercises.push(...newEx);
         state.favorites = [...new Set(state.favorites.concat(incoming.favorites))];
+        state.videoOverrides = Object.assign({}, incoming.videoOverrides, state.videoOverrides);
         save();
         renderAll();
         toast('הגיבוי יובא בהצלחה 🌸');
@@ -2087,10 +2230,19 @@ const actions = {
     'pane': el => setPane(el.dataset.pane),
     'toggle-ex': el => {
         const id = el.dataset.id;
-        if (ui.expanded.has(id)) ui.expanded.delete(id); else ui.expanded.add(id);
-        el.closest('.ex-card').classList.toggle('open', ui.expanded.has(id));
-        el.setAttribute('aria-expanded', ui.expanded.has(id));
+        const open = !ui.expanded.has(id);
+        if (open) ui.expanded.add(id); else ui.expanded.delete(id);
+        const card = el.closest('.ex-card');
+        const box = card.querySelector('.ex-details');
+        const ex = findExercise(id);
+        box.innerHTML = open && ex ? exerciseDetailHtml(ex) : '';
+        card.classList.toggle('open', open);
+        el.setAttribute('aria-expanded', open);
+        if (open) mountDemos(box);
     },
+    'ex-info': el => openExerciseModal(el.dataset.id),
+    'play-video': el => playVideo(el),
+    'set-video': el => setVideo(el.dataset.id),
     'add-ex': el => addExerciseToLesson(el.dataset.id),
     'fav': el => toggleFav(el.dataset.id),
     'filter-cat': el => { ui.cat = el.dataset.cat; renderLibrary(); $('#exerciseList').scrollTop = 0; },
